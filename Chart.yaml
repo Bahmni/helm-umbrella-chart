@@ -19,3 +19,8 @@ dependencies:
     name: bahmni-lab
     version: ~1.0.0-0
     condition: bahmni-lab.enabled
+
+  - repository: https://bahmni.github.io/helm-charts
+    name: crater
+    version: ~1.0.0-0
+    condition: crater.enabled
