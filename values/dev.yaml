@@ -6,3 +6,5 @@ openmrs:
   enabled: true
 bahmni-web:
   enabled: true
+bahmni-lab:
+  enabled: true

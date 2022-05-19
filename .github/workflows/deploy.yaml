@@ -2,8 +2,8 @@ name: Deploy to dev environment
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:  
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -21,6 +21,7 @@ jobs:
           yq eval-all '. as $item ireduce ({}; . * $item )' \
           values/dev.yaml \
           values/openmrs/dev.yaml \
+          values/bahmni-lab/dev.yaml \
           values/bahmni-web/dev.yaml \
           > values.yaml
       - name: Configure AWS Credentials
@@ -30,7 +31,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.BAHMNI_AWS_SECRET }}
           aws-region: ${{ secrets.BAHMNI_AWS_REGION }}
           role-to-assume: ${{ secrets.BAHMNI_INFRA_ADMIN_ROLE }}
-          role-duration-seconds: 900  # 15 mins
+          role-duration-seconds: 900 # 15 mins
           role-session-name: BahmniInfraAdminSession
       - name: Authorise Kubectl with EKS
         run: aws eks update-kubeconfig --name $CLUSTER_NAME
@@ -54,4 +55,3 @@ jobs:
       - name: Post Deployment Status To Slack
         run: |
           curl -X POST -H 'Content-type: application/json' --data '{"text":":white_check_mark:  Bahmni India Distro deployed on ${{ env.INGRESS_DNS }}"}' ${{ secrets.SLACK_WEBHOOK_URL }}
-          

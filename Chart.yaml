@@ -14,3 +14,8 @@ dependencies:
     name: bahmni-web
     version: ~1.0.0-0
     condition: bahmni-web.enabled
+
+  - repository: https://bahmni.github.io/helm-charts
+    name: bahmni-lab
+    version: ~1.0.0-0
+    condition: bahmni-lab.enabled
