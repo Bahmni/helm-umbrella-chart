@@ -2,7 +2,8 @@ name: Deploy to dev environment
 
 on:
   push:
-    branches: [main]
+    branches: 
+      - ingress-fix
   workflow_dispatch:
 
 jobs:
@@ -50,8 +51,20 @@ jobs:
           --set openmrs.secrets.DB_USERNAME=$RDS_USERNAME \
           --set openmrs.secrets.DB_PASSWORD=$RDS_PASSWORD \
           --set openmrs.secrets.DB_HOST=$RDS_HOST \
-          --set ingress.host=$INGRESS_DNS \
+          --set ingress.host=lite.mybahmni.in \
           --install
-      - name: Post Deployment Status To Slack
+  notification:
+    name: Slack notification
+    needs:
+      - deploy
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Success
+        if: ${{ needs.deploy.result == 'success' }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text":":white_check_mark:  Bahmni India Distro deployed on ${{ env.INGRESS_DNS }}"}' ${{ secrets.SLACK_WEBHOOK_URL }}
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"🟢 Bahmni India Distro deployed on ${{ env.INGRESS_DNS }}"}' ${{ secrets.SLACK_WEBHOOK_URL }}
+      - name: Failure
+        if: ${{ needs.deploy.result == 'failure' }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"🔴 Bahmni India Distro deployment failed!!! This is where you go look what happened' ${{ secrets.SLACK_WEBHOOK_URL }}
