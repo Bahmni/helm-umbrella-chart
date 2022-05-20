@@ -1,0 +1,15 @@
+{
+  "Comment": "Creating Alias resource record set in Route 53",
+  "Changes": [{
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "lite.mybahmni.in.",
+      "Type": "A",
+      "AliasTarget": {
+          "HostedZoneId": "ZVDDRBQ08TROA",
+          "DNSName": "elb.ap-south-1.amazonaws.com",
+          "EvaluateTargetHealth": false
+      }
+    }
+  }]
+}
