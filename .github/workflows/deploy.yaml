@@ -54,6 +54,12 @@ jobs:
           --set bahmni-openmrs.secrets.DB_USERNAME=$RDS_USERNAME \
           --set bahmni-openmrs.secrets.DB_PASSWORD=$RDS_PASSWORD \
           --set bahmni-openmrs.secrets.DB_HOST=$RDS_HOST \
+          --set reports.secrets.OPENMRS_DB_HOST=$RDS_HOST \
+          --set reports.secrets.OPENMRS_DB_USERNAME=$RDS_USERNAME \
+          --set reports.secrets.OPENMRS_DB_PASSWORD=$RDS_PASSWORD \
+          --set reports.secrets.REPORTS_DB_SERVER=$RDS_HOST \
+          --set reports.secrets.REPORTS_DB_USERNAME=$RDS_USERNAME \
+          --set reports.secrets.REPORTS_DB_PASSWORD=$RDS_PASSWORD \
           --set ingress.host=lite.eks.mybahmni.in \
           --install
   notification:

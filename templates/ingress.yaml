@@ -32,16 +32,6 @@ spec:
                   number: 8091
           {{- end }}
 
-          {{- if .Values.openmrs.enabled }}
-          - path: /openmrs
-            pathType: Prefix
-            backend:
-              service:
-                name: bahmni-openmrs
-                port:
-                  number: 8080
-          {{- end }}
-
           {{- if index .Values "bahmni-lab" "enabled" }}
           - path: /lab
             pathType: Prefix
@@ -50,6 +40,16 @@ spec:
                 name: bahmni-lab
                 port:
                   number: 8090
+          {{- end }}
+
+          {{- if .Values.reports.enabled }}
+          - path: /bahmnireports
+            pathType: Prefix
+            backend:
+              service:
+                name: reports
+                port:
+                  number: 8051
           {{- end }}
 
     - host: payments-{{ .Values.ingress.host }}
@@ -63,4 +63,30 @@ spec:
                 name: crater-nginx
                 port:
                   number: 80
+          {{- end }}
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: openmrs-ingress
+  labels:
+    environment: {{ .Values.metadata.labels.environment }}
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header Set-Cookie "reporting_session=$cookie_JSESSIONID;Domain=$http_host;Path=/;Max-Age=86400";
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          {{- if .Values.openmrs.enabled }}
+          - path: /openmrs
+            pathType: Prefix
+            backend:
+              service:
+                name: bahmni-openmrs
+                port:
+                  number: 8080
           {{- end }}

@@ -10,3 +10,5 @@ bahmni-lab:
   enabled: true
 crater:
   enabled: true
+reports:
+  enabled: true
