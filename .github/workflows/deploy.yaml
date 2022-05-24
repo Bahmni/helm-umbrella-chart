@@ -37,7 +37,11 @@ jobs:
       - name: Authorise Kubectl with EKS
         run: aws eks update-kubeconfig --name $CLUSTER_NAME
       - name: Install Nginx Ingress
-        run: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.2/deploy/static/provider/aws/deploy.yaml
+        run: |
+          wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/aws/nlb-with-tls-termination/deploy.yaml
+          sed  -i.bak "s/XXX.XXX.XXX\/XX/10.0.0.0\/16/" deploy.yaml
+          sed  -i.bak "s/arn:aws:acm:us-west-2:XXXXXXXX:certificate\/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX/${{ secrets.MYBAHMNI_CERT_ARN }}/" deploy.yaml
+          kubectl apply -f deploy.yaml
       - name: Upsert Route53 A record with INGRESS_DNS
         run: |
           INGRESS_DNS=$(kubectl -n ingress-nginx  get svc ingress-nginx-controller -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
@@ -60,7 +64,7 @@ jobs:
           --set reports.secrets.REPORTS_DB_SERVER=$RDS_HOST \
           --set reports.secrets.REPORTS_DB_USERNAME=$RDS_USERNAME \
           --set reports.secrets.REPORTS_DB_PASSWORD=$RDS_PASSWORD \
-          --set ingress.host=lite.eks.mybahmni.in \
+          --set ingress.host=lite.mybahmni.in \
           --install
   notification:
     name: Slack notification
