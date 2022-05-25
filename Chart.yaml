@@ -29,3 +29,38 @@ dependencies:
     name: reports
     version: ~1.0.0-0
     condition: reports.enabled
+
+  - repository: https://bahmniindiadistro.github.io/helm-charts
+    name: hip
+    version: ~1.0.0-0
+    condition: hip.enabled
+
+  - repository: https://bahmniindiadistro.github.io/helm-charts
+    name: hiu
+    version: ~1.0.0-0
+    condition: hiu.enabled
+
+  - repository: https://bahmniindiadistro.github.io/helm-charts
+    name: hiu-db
+    version: ~1.0.0-0
+    condition: hiu-db.enabled
+
+  - repository: https://bahmniindiadistro.github.io/helm-charts
+    name: hiu-ui
+    version: ~1.0.0-0
+    condition: hiu-ui.enabled
+
+  - repository: https://bahmniindiadistro.github.io/helm-charts
+    name: otp-service
+    version: ~1.0.0-0
+    condition: otp-service.enabled
+
+  - repository: https://charts.bitnami.com/bitnami
+    name: postgresql
+    version: 11.2.6
+    condition: abdm-db.enabled
+
+  - repository: https://charts.bitnami.com/bitnami
+    name: rabbitmq
+    version: 9.1.4
+    condition: rabbit-mq.enabled

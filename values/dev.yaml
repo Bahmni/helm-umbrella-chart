@@ -14,3 +14,28 @@ reports:
   enabled: true
   config:
     OPENMRS_HOST: "bahmni-openmrs"
+hiu:
+  enabled: true
+hiu-db:
+  enabled: true
+hiu-ui:
+  enabled: true
+hip:
+  enabled: true
+otp-service:
+  enabled: true
+abdm-db:
+  enabled: true
+rabbit-mq:
+  enabled: true
+
+rabbitmq:
+  auth:
+    username: guest
+    password: guest
+    erlangCookie: guest
+
+global:
+  postgresql:
+    auth:
+      postgresPassword: welcome

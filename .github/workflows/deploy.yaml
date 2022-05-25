@@ -3,7 +3,7 @@ name: Deploy to dev environment
 on:
   push:
     branches: 
-      - main
+      - ABDM-Infra
   workflow_dispatch:
 
 jobs:
@@ -52,6 +52,8 @@ jobs:
           RDS_USERNAME=$(aws ssm get-parameter --with-decryption --name "/dev/rds/mysql/username" --query "Parameter.Value" --output text)
           RDS_PASSWORD=$(aws ssm get-parameter --with-decryption --name "/dev/rds/mysql/password" --query "Parameter.Value" --output text)
           RDS_HOST=$(aws ssm get-parameter --with-decryption --name "/dev/rds/mysql/host" --query "Parameter.Value" --output text)
+          GATEWAY_CLIENT_ID=$(aws ssm get-parameter --with-decryption --name "/nonprod/abdm/GATEWAY_CLIENT_ID" --query "Parameter.Value" --output text)
+          GATEWAY_CLIENT_SECRET=$(aws ssm get-parameter --with-decryption --name "/nonprod/abdm/GATEWAY_CLIENT_SECRET" --query "Parameter.Value" --output text)
           helm upgrade bahmni-dev . \
           --set bahmni-openmrs.secrets.DB_ROOT_USERNAME=$RDS_USERNAME \
           --set bahmni-openmrs.secrets.DB_ROOT_PASSWORD=$RDS_PASSWORD \
@@ -64,6 +66,14 @@ jobs:
           --set reports.secrets.REPORTS_DB_SERVER=$RDS_HOST \
           --set reports.secrets.REPORTS_DB_USERNAME=$RDS_USERNAME \
           --set reports.secrets.REPORTS_DB_PASSWORD=$RDS_PASSWORD \
+          --set hip.secrets.GATEWAY_CLIENT_ID=$GATEWAY_CLIENT_ID \
+          --set hip.secrets.GATEWAY_CLIENT_SECRET=$GATEWAY_CLIENT_SECRET \
+          --set hip.secrets.OPENMRS_PASSWORD=Admin@123 \
+          --set hip.config.BAHMNI_URL=https://lite.mybahmni.in/openmrs \
+          --set hiu.secrets.HIU_CLIENT_ID=$GATEWAY_CLIENT_ID \
+          --set hiu.secrets.HIU_CLIENT_SECRET=$GATEWAY_CLIENT_SECRET \
+          --set hiu.config.DATA_PUSH_URL=https://lite.mybahmni.in/hiu-api/data/notification \
+          --set hiu-ui.config.BACKEND_BASE_URL=https://lite.mybahmni.in \
           --set ingress.host=lite.mybahmni.in \
           --install
   notification:

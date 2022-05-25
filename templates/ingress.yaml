@@ -52,6 +52,46 @@ spec:
                   number: 8051
           {{- end }}
 
+          {{- if .Values.hiu.enabled }}
+          - path: /hiu-api
+            pathType: Prefix
+            backend:
+              service:
+                name: hiu
+                port:
+                  number: 9053
+          {{- end }}
+
+          {{- if index .Values "hiu-ui" "enabled" }}
+          - path: /hiuser
+            pathType: Prefix
+            backend:
+              service:
+                name: hiu-ui
+                port:
+                  number: 5000
+          {{- end }}
+
+          {{- if .Values.hip.enabled }}
+          - path: /hip
+            pathType: Prefix
+            backend:
+              service:
+                name: hip
+                port:
+                  number: 8000
+          {{- end }}
+
+          {{- if index .Values "otp-service" "enabled" }}
+          - path: /otp-service
+            pathType: Prefix
+            backend:
+              service:
+                name: otp-service
+                port:
+                  number: 8092
+          {{- end }}
+
     - host: payments-{{ .Values.ingress.host }}
       http:
         paths:

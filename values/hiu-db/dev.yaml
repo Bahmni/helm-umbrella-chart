@@ -1,0 +1,4 @@
+hiu-db:
+  metadata:
+    labels:
+      environment: dev

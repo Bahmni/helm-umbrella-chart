@@ -1,0 +1,4 @@
+hip:
+  metadata:
+    labels:
+      environment: dev
