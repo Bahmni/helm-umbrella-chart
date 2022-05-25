@@ -30,6 +30,8 @@ rabbit-mq:
   enabled: true
 
 rabbitmq:
+  image:
+    tag: 3.8.9
   auth:
     username: guest
     password: guest
