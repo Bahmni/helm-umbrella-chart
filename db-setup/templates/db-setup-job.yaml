@@ -1,12 +1,12 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: dbSetup
+  name: db-setup
 spec:
   template:
     spec:
       containers:
-        - name: dbSetup
+        - name: db-setup
           image: mysql:5.7
           command: [ "/bin/sh", "-c" ]
           args:
