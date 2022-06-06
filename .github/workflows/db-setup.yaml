@@ -1,8 +1,5 @@
 name: Database Setup
 on:
-  push:
-    branches:
-      - BAH-1809
   workflow_dispatch:
     inputs:
       environment:
@@ -16,7 +13,7 @@ on:
           - demo
 jobs:
   setup:
-    name: DB Setup for ${{ github.event.inputs.environment || 'dev' }} environment
+    name: DB Setup for ${{ github.event.inputs.environment }} environment
     runs-on: ubuntu-latest
     env:
       CLUSTER_NAME: bahmni-cluster-dev
@@ -34,20 +31,20 @@ jobs:
           role-session-name: BahmniInfraAdminSession
       - name: Authorise Kubectl with EKS
         run: aws eks update-kubeconfig --name $CLUSTER_NAME
-      - name: Helm Install DB Setup Chart
+      - name: Helm Install DB Setup Chart & Wait
         run: |
           RDS_HOST=$(aws ssm get-parameter --with-decryption --name "/dev/rds/mysql/host" --query "Parameter.Value" --output text)
           RDS_USERNAME=$(aws ssm get-parameter --with-decryption --name "/dev/rds/mysql/username" --query "Parameter.Value" --output text)
           RDS_PASSWORD=$(aws ssm get-parameter --with-decryption --name "/dev/rds/mysql/password" --query "Parameter.Value" --output text)
-          OPENMRS_DB_USERNAME=$(aws ssm get-parameter --with-decryption --name "/${{ github.event.inputs.environment || 'dev' }}/openmrs/DB_USERNAME" --query "Parameter.Value" --output text)
-          OPENMRS_DB_PASSWORD=$(aws ssm get-parameter --with-decryption --name "/${{ github.event.inputs.environment || 'dev' }}/openmrs/DB_PASSWORD" --query "Parameter.Value" --output text)
-          REPORTS_DB_USERNAME=$(aws ssm get-parameter --with-decryption --name "/${{ github.event.inputs.environment || 'dev' }}/reports/DB_USERNAME" --query "Parameter.Value" --output text)
-          REPORTS_DB_PASSWORD=$(aws ssm get-parameter --with-decryption --name "/${{ github.event.inputs.environment || 'dev' }}/reports/DB_PASSWORD" --query "Parameter.Value" --output text)
-          CRATER_DB_USERNAME=$(aws ssm get-parameter --with-decryption --name "/${{ github.event.inputs.environment || 'dev' }}/crater/DB_USERNAME" --query "Parameter.Value" --output text)
-          CRATER_DB_PASSWORD=$(aws ssm get-parameter --with-decryption --name "/${{ github.event.inputs.environment || 'dev' }}/crater/DB_PASSWORD" --query "Parameter.Value" --output text)
+          OPENMRS_DB_USERNAME=$(aws ssm get-parameter --with-decryption --name "/${{ github.event.inputs.environment }}/openmrs/DB_USERNAME" --query "Parameter.Value" --output text)
+          OPENMRS_DB_PASSWORD=$(aws ssm get-parameter --with-decryption --name "/${{ github.event.inputs.environment }}/openmrs/DB_PASSWORD" --query "Parameter.Value" --output text)
+          REPORTS_DB_USERNAME=$(aws ssm get-parameter --with-decryption --name "/${{ github.event.inputs.environment }}/reports/DB_USERNAME" --query "Parameter.Value" --output text)
+          REPORTS_DB_PASSWORD=$(aws ssm get-parameter --with-decryption --name "/${{ github.event.inputs.environment }}/reports/DB_PASSWORD" --query "Parameter.Value" --output text)
+          CRATER_DB_USERNAME=$(aws ssm get-parameter --with-decryption --name "/${{ github.event.inputs.environment }}/crater/DB_USERNAME" --query "Parameter.Value" --output text)
+          CRATER_DB_PASSWORD=$(aws ssm get-parameter --with-decryption --name "/${{ github.event.inputs.environment }}/crater/DB_PASSWORD" --query "Parameter.Value" --output text)
           
           helm upgrade db-setup db-setup/ \
-          --set environment=${{ github.event.inputs.environment || 'dev' }} \
+          --set environment=${{ github.event.inputs.environment }} \
           --set DB_HOST=$RDS_HOST \
           --set DB_ROOT_USERNAME=$RDS_USERNAME \
           --set DB_ROOT_PASSWORD=$RDS_PASSWORD \
@@ -61,6 +58,6 @@ jobs:
           --wait \
           --wait-for-jobs
 
-      - name: Delete Helm Resources
+      - name: Uninstall DB Setup Helm Chart
         run: helm uninstall db-setup
 
