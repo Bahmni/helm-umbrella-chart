@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dbSetup
+spec:
+  template:
+    spec:
+      containers:
+        - name: dbSetup
+          image: mysql:5.7
+          command: [ "/bin/sh", "-c" ]
+          args:
+            - echo starting;
+              mysql --host="${DB_HOST}" --user="${DB_ROOT_USERNAME}" --password="${DB_ROOT_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS ${OPENMRS_DB_NAME};";
+              mysql --host="${DB_HOST}" --user="${DB_ROOT_USERNAME}" --password="${DB_ROOT_PASSWORD}" -e "CREATE USER IF NOT EXISTS '${OPENMRS_DB_USERNAME}' IDENTIFIED BY '${OPENMRS_DB_PASSWORD}';";
+              mysql --host="${DB_HOST}" --user="${DB_ROOT_USERNAME}" --password="${DB_ROOT_PASSWORD}" -e "GRANT ALL PRIVILEGES ON ${OPENMRS_DB_NAME}. * TO '${OPENMRS_DB_USERNAME}';";
+
+              mysql --host="${DB_HOST}" --user="${DB_ROOT_USERNAME}" --password="${DB_ROOT_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS ${REPORTS_DB_NAME};";
+              mysql --host="${DB_HOST}" --user="${DB_ROOT_USERNAME}" --password="${DB_ROOT_PASSWORD}" -e "CREATE USER IF NOT EXISTS '${REPORTS_DB_USERNAME}' IDENTIFIED BY '${REPORTS_DB_PASSWORD}';";
+              mysql --host="${DB_HOST}" --user="${DB_ROOT_USERNAME}" --password="${DB_ROOT_PASSWORD}" -e "GRANT ALL PRIVILEGES ON ${REPORTS_DB_NAME}. * TO '${REPORTS_DB_USERNAME}';";
+
+              mysql --host="${DB_HOST}" --user="${DB_ROOT_USERNAME}" --password="${DB_ROOT_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS ${CRATER_DB_NAME};";
+              mysql --host="${DB_HOST}" --user="${DB_ROOT_USERNAME}" --password="${DB_ROOT_PASSWORD}" -e "CREATE USER IF NOT EXISTS '${CRATER_DB_USERNAME}' IDENTIFIED BY '${CRATER_DB_PASSWORD}';";
+              mysql --host="${DB_HOST}" --user="${DB_ROOT_USERNAME}" --password="${DB_ROOT_PASSWORD}" -e "GRANT ALL PRIVILEGES ON ${CRATER_DB_NAME}. * TO '${CRATER_DB_USERNAME}';";
+              echo done;
+          envFrom:
+            - secretRef:
+                name: db-credentials
+                optional: false
+      restartPolicy: Never
