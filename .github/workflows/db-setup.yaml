@@ -54,4 +54,10 @@ jobs:
           --set REPORTS_DB_PASSWORD=$REPORTS_DB_PASSWORD \
           --set CRATER_DB_USERNAME=$CRATER_DB_USERNAME \
           --set CRATER_DB_PASSWORD=$CRATER_DB_PASSWORD \
-          --install
+          --install \
+          --wait \
+          --wait-for-jobs
+
+      - name: Delete Helm Resources
+        run: helm uninstall db-setup
+
