@@ -4,7 +4,7 @@ name: Deploy to dev environment
 on:
   push:
     branches: 
-      - main
+      - BAH-1809
   workflow_dispatch:
 
 
@@ -41,28 +41,55 @@ jobs:
           INGRESS_DNS=$(kubectl -n ingress-nginx  get svc ingress-nginx-controller -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
           jq --arg ingress_dns "$INGRESS_DNS" '.Changes[].ResourceRecordSet.AliasTarget.DNSName = $ingress_dns' aws/route53/lite.mybahmni.in.json > recordset
           aws route53 change-resource-record-sets --hosted-zone-id ${{ secrets.HOSTED_ZONE_ID }} --change-batch file://recordset
+      - name: Get and store ssm secrets
+        run: |
+          echo "$(aws ssm get-parameter --with-decryption --name "/dev/rds/mysql/host" --query "Parameter.Value" --output text)">RDS_HOST
+          echo "$(aws ssm get-parameter --with-decryption --name "/dev/rds/mysql/username" --query "Parameter.Value" --output text)">RDS_USERNAME
+          echo "$(aws ssm get-parameter --with-decryption --name "/dev/rds/mysql/password" --query "Parameter.Value" --output text)">RDS_PASSWORD
+          echo "$(aws ssm get-parameter --with-decryption --name "/dev/openmrs/DB_USERNAME" --query "Parameter.Value" --output text)"> OPENMRS_DB_USERNAME
+          echo "$(aws ssm get-parameter --with-decryption --name "/dev/openmrs/DB_PASSWORD" --query "Parameter.Value" --output text)">  OPENMRS_DB_PASSWORD
+          echo "$(aws ssm get-parameter --with-decryption --name "/dev/reports/DB_USERNAME" --query "Parameter.Value" --output text)"> REPORTS_DB_USERNAME
+          echo "$(aws ssm get-parameter --with-decryption --name "/dev/reports/DB_PASSWORD" --query "Parameter.Value" --output text)">REPORTS_DB_PASSWORD
+          echo "$(aws ssm get-parameter --with-decryption --name "/dev/crater/DB_USERNAME" --query "Parameter.Value" --output text)">CRATER_DB_USERNAME
+          echo "$(aws ssm get-parameter --with-decryption --name "/dev/crater/DB_PASSWORD" --query "Parameter.Value" --output text)"> CRATER_DB_PASSWORD    
+      - name: Setup databases
+        run: |
+          helm install db-setup db-setup --repo https://bahmni.github.io/helm-charts --devel --wait --wait-for-jobs --atomic --timeout 1m \
+          --set DB_HOST=$(cat RDS_HOST) \
+          --set DB_ROOT_USERNAME=$(cat RDS_USERNAME) \
+          --set DB_ROOT_PASSWORD=$(cat RDS_PASSWORD) \
+          --set databases.openmrs.DB_NAME=openmrs_test \
+          --set databases.openmrs.USERNAME=$(cat OPENMRS_DB_USERNAME) \
+          --set databases.openmrs.PASSWORD=$(cat OPENMRS_DB_PASSWORD) \
+          --set databases.crater.DB_NAME=crater_test \
+          --set databases.crater.USERNAME=$(cat CRATER_DB_USERNAM) \
+          --set databases.crater.PASSWORD=$(cat CRATER_DB_PASSWORD) \
+          --set databases.reports.DB_NAME=bahmni_reports_test \
+          --set databases.reports.USERNAME=$(cat REPORTS_DB_USERNAME) \
+          --set databases.reports.PASSWORD=$(cat REPORTS_DB_PASSWORD)
+
+      - name: Deleting db-setup helm release
+        run: helm uninstall db-setup
+
       - name: Helm Upgrade
         run: |
-          RDS_USERNAME=$(aws ssm get-parameter --with-decryption --name "/dev/rds/mysql/username" --query "Parameter.Value" --output text)
-          RDS_PASSWORD=$(aws ssm get-parameter --with-decryption --name "/dev/rds/mysql/password" --query "Parameter.Value" --output text)
           MQ_USERNAME=$(aws ssm get-parameter --with-decryption --name "/nonprod/rabbitmq/USERNAME" --query "Parameter.Value" --output text)
           MQ_PASSWORD=$(aws ssm get-parameter --with-decryption --name "/nonprod/rabbitmq/PASSWORD" --query "Parameter.Value" --output text)
           PSQL_PASSWORD=$(aws ssm get-parameter --with-decryption --name "/nonprod/psql/DB_PASSWORD" --query "Parameter.Value" --output text)
-          RDS_HOST=$(aws ssm get-parameter --with-decryption --name "/dev/rds/mysql/host" --query "Parameter.Value" --output text)
           GATEWAY_CLIENT_ID=$(aws ssm get-parameter --with-decryption --name "/nonprod/abdm/GATEWAY_CLIENT_ID" --query "Parameter.Value" --output text)
           GATEWAY_CLIENT_SECRET=$(aws ssm get-parameter --with-decryption --name "/nonprod/abdm/GATEWAY_CLIENT_SECRET" --query "Parameter.Value" --output text)
           helm upgrade bahmni-dev . \
-          --set bahmni-openmrs.secrets.DB_ROOT_USERNAME=$RDS_USERNAME \
-          --set bahmni-openmrs.secrets.DB_ROOT_PASSWORD=$RDS_PASSWORD \
-          --set bahmni-openmrs.secrets.DB_USERNAME=$RDS_USERNAME \
-          --set bahmni-openmrs.secrets.DB_PASSWORD=$RDS_PASSWORD \
-          --set bahmni-openmrs.secrets.DB_HOST=$RDS_HOST \
-          --set reports.secrets.OPENMRS_DB_HOST=$RDS_HOST \
-          --set reports.secrets.OPENMRS_DB_USERNAME=$RDS_USERNAME \
-          --set reports.secrets.OPENMRS_DB_PASSWORD=$RDS_PASSWORD \
-          --set reports.secrets.REPORTS_DB_SERVER=$RDS_HOST \
-          --set reports.secrets.REPORTS_DB_USERNAME=$RDS_USERNAME \
-          --set reports.secrets.REPORTS_DB_PASSWORD=$RDS_PASSWORD \
+          --set bahmni-openmrs.secrets.DB_ROOT_USERNAME=$(cat RDS_USERNAME) \
+          --set bahmni-openmrs.secrets.DB_ROOT_PASSWORD=$(cat RDS_PASSWORD) \
+          --set bahmni-openmrs.secrets.DB_USERNAME=$(cat RDS_USERNAME) \
+          --set bahmni-openmrs.secrets.DB_PASSWORD=$(cat RDS_PASSWORD) \
+          --set bahmni-openmrs.secrets.DB_HOST=$(cat RDS_HOST) \
+          --set reports.secrets.OPENMRS_DB_HOST=$(cat RDS_HOST) \
+          --set reports.secrets.OPENMRS_DB_USERNAME=$(cat RDS_USERNAME) \
+          --set reports.secrets.OPENMRS_DB_PASSWORD=$(cat RDS_PASSWORD) \
+          --set reports.secrets.REPORTS_DB_SERVER=$(cat RDS_HOST) \
+          --set reports.secrets.REPORTS_DB_USERNAME=$(cat RDS_USERNAME) \
+          --set reports.secrets.REPORTS_DB_PASSWORD=$(cat RDS_PASSWORD) \
           --set hip.secrets.GATEWAY_CLIENT_ID=$GATEWAY_CLIENT_ID \
           --set hip.secrets.GATEWAY_CLIENT_SECRET=$GATEWAY_CLIENT_SECRET \
           --set hip.secrets.OPENMRS_PASSWORD=Admin123 \
