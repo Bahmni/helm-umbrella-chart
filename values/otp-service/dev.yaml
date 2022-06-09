@@ -1,4 +1,0 @@
-otp-service:
-  metadata:
-    labels:
-      environment: dev

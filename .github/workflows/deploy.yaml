@@ -19,14 +19,6 @@ jobs:
         uses: actions/checkout@v2
       - name: Helm Dependency Update
         run: helm dependency update
-      - name: Merge Values
-        run: |
-          yq eval-all '. as $item ireduce ({}; . * $item )' \
-          values/dev.yaml \
-          values/openmrs/dev.yaml \
-          values/bahmni-lab/dev.yaml \
-          values/bahmni-web/dev.yaml \
-          > values.yaml
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -53,6 +45,9 @@ jobs:
         run: |
           RDS_USERNAME=$(aws ssm get-parameter --with-decryption --name "/dev/rds/mysql/username" --query "Parameter.Value" --output text)
           RDS_PASSWORD=$(aws ssm get-parameter --with-decryption --name "/dev/rds/mysql/password" --query "Parameter.Value" --output text)
+          MQ_USERNAME=$(aws ssm get-parameter --with-decryption --name "/nonprod/rabbitmq/USERNAME" --query "Parameter.Value" --output text)
+          MQ_PASSWORD=$(aws ssm get-parameter --with-decryption --name "/nonprod/rabbitmq/PASSWORD" --query "Parameter.Value" --output text)
+          PSQL_PASSWORD=$(aws ssm get-parameter --with-decryption --name "/nonprod/psql/DB_PASSWORD" --query "Parameter.Value" --output text)
           RDS_HOST=$(aws ssm get-parameter --with-decryption --name "/dev/rds/mysql/host" --query "Parameter.Value" --output text)
           GATEWAY_CLIENT_ID=$(aws ssm get-parameter --with-decryption --name "/nonprod/abdm/GATEWAY_CLIENT_ID" --query "Parameter.Value" --output text)
           GATEWAY_CLIENT_SECRET=$(aws ssm get-parameter --with-decryption --name "/nonprod/abdm/GATEWAY_CLIENT_SECRET" --query "Parameter.Value" --output text)
@@ -76,7 +71,11 @@ jobs:
           --set hiu.secrets.HIU_CLIENT_SECRET=$GATEWAY_CLIENT_SECRET \
           --set hiu.config.DATA_PUSH_URL=https://lite.mybahmni.in/hiu-api/data/notification \
           --set hiu-ui.config.BACKEND_BASE_URL=https://lite.mybahmni.in \
+          --set global.postgresql.auth.postgresPassword=$PSQL_PASSWORD \
+          --set rabbitmq.auth.username=$MQ_USERNAME \
+          --set rabbitmq.auth.password=$MQ_PASSWORD \
           --set ingress.host=lite.mybahmni.in \
+          --values=values/dev.yaml \
           --install
   notification:
     name: Slack notification

@@ -35,11 +35,4 @@ rabbit-mq:
 
 rabbitmq:
   auth:
-    username: bahmni
-    password: bahmni
     erlangCookie: bahmni
-
-global:
-  postgresql:
-    auth:
-      postgresPassword: welcome
