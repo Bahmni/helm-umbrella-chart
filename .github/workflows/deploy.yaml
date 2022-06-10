@@ -22,8 +22,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Helm Dependency Update
-        run: helm dependency update
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -46,7 +44,7 @@ jobs:
           INGRESS_DNS=$(kubectl -n ingress-nginx  get svc ingress-nginx-controller -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
           jq --arg ingress_dns "$INGRESS_DNS" '.Changes[].ResourceRecordSet.AliasTarget.DNSName = $ingress_dns' aws/route53/lite.mybahmni.in.json > recordset
           aws route53 change-resource-record-sets --hosted-zone-id ${{ secrets.HOSTED_ZONE_ID }} --change-batch file://recordset
-      - name: Get and store ssm secrets
+      - name: Set SSM Secrets as Masked Environment Variables
         run: |
           ./.github/get_masked_ssm_parameter.sh /dev/rds/mysql/host RDS_HOST
           ./.github/get_masked_ssm_parameter.sh /dev/rds/mysql/username RDS_USERNAME
@@ -82,7 +80,10 @@ jobs:
       - name: Deleting db-setup helm release
         if: ${{ github.event.inputs.enable_db_setup == 'true' }}
         run: helm uninstall db-setup
-
+      - name: Helm Dependency Update
+        run: helm dependency update
+      - name: List Helm Dependencies
+        run: ls charts | cut -d '.' -f 1 -f 2 -f 3
       - name: Helm Upgrade
         run: |
           helm upgrade bahmni-dev . \
