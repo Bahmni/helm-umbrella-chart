@@ -6,7 +6,12 @@ on:
     branches: 
       - BAH-1809
   workflow_dispatch:
-
+    inputs:
+      enable_db_setup:
+        description: 'Enable this to create databases'
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   deploy:
@@ -53,6 +58,7 @@ jobs:
           echo "$(aws ssm get-parameter --with-decryption --name "/dev/crater/DB_USERNAME" --query "Parameter.Value" --output text)">CRATER_DB_USERNAME
           echo "$(aws ssm get-parameter --with-decryption --name "/dev/crater/DB_PASSWORD" --query "Parameter.Value" --output text)"> CRATER_DB_PASSWORD    
       - name: Setup databases
+        if: ${{ github.event.inputs.enable_db_setup == 'true' }}
         run: |
           helm install db-setup db-setup --repo https://bahmni.github.io/helm-charts --devel --wait --wait-for-jobs --atomic --timeout 1m \
           --set DB_HOST=$(cat RDS_HOST) \
@@ -69,6 +75,7 @@ jobs:
           --set databases.reports.PASSWORD=$(cat REPORTS_DB_PASSWORD)
 
       - name: Deleting db-setup helm release
+        if: ${{ github.event.inputs.enable_db_setup == 'true' }}
         run: helm uninstall db-setup
 
       - name: Helm Upgrade
