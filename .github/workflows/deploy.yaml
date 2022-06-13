@@ -44,22 +44,9 @@ jobs:
           INGRESS_DNS=$(kubectl -n ingress-nginx  get svc ingress-nginx-controller -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
           jq --arg ingress_dns "$INGRESS_DNS" '.Changes[].ResourceRecordSet.AliasTarget.DNSName = $ingress_dns' aws/route53/lite.mybahmni.in.json > recordset
           aws route53 change-resource-record-sets --hosted-zone-id ${{ secrets.HOSTED_ZONE_ID }} --change-batch file://recordset
-      - name: Set SSM Secrets as Masked Environment Variables
-        run: |
-          ./.github/get_masked_ssm_parameter.sh /dev/rds/mysql/host RDS_HOST
-          ./.github/get_masked_ssm_parameter.sh /dev/rds/mysql/username RDS_USERNAME
-          ./.github/get_masked_ssm_parameter.sh /dev/rds/mysql/password RDS_PASSWORD
-          ./.github/get_masked_ssm_parameter.sh /dev/openmrs/DB_USERNAME OPENMRS_DB_USERNAME
-          ./.github/get_masked_ssm_parameter.sh /dev/openmrs/DB_PASSWORD OPENMRS_DB_PASSWORD
-          ./.github/get_masked_ssm_parameter.sh /dev/reports/DB_USERNAME REPORTS_DB_USERNAME
-          ./.github/get_masked_ssm_parameter.sh /dev/reports/DB_PASSWORD REPORTS_DB_PASSWORD
-          ./.github/get_masked_ssm_parameter.sh /dev/crater/DB_USERNAME CRATER_DB_USERNAME
-          ./.github/get_masked_ssm_parameter.sh /dev/crater/DB_PASSWORD CRATER_DB_PASSWORD
-          ./.github/get_masked_ssm_parameter.sh /nonprod/rabbitmq/USERNAME MQ_USERNAME
-          ./.github/get_masked_ssm_parameter.sh /nonprod/rabbitmq/PASSWORD MQ_PASSWORD
-          ./.github/get_masked_ssm_parameter.sh /nonprod/psql/DB_PASSWORD PSQL_PASSWORD
-          ./.github/get_masked_ssm_parameter.sh /nonprod/abdm/GATEWAY_CLIENT_ID GATEWAY_CLIENT_ID
-          ./.github/get_masked_ssm_parameter.sh /nonprod/abdm/GATEWAY_CLIENT_SECRET GATEWAY_CLIENT_SECRET
+      - name: Setup Environment secrets
+        shell: bash
+        run: bash .github/setupEnvSecrets.sh dev
       - name: Setup databases
         if: ${{ github.event.inputs.enable_db_setup == 'true' }}
         run: |
@@ -67,13 +54,13 @@ jobs:
           --set DB_HOST=$RDS_HOST \
           --set DB_ROOT_USERNAME=$RDS_USERNAME \
           --set DB_ROOT_PASSWORD=$RDS_PASSWORD \
-          --set databases.openmrs.DB_NAME=openmrs_test \
+          --set databases.openmrs.DB_NAME=openmrs \
           --set databases.openmrs.USERNAME=$OPENMRS_DB_USERNAME \
           --set databases.openmrs.PASSWORD=$OPENMRS_DB_PASSWORD \
-          --set databases.crater.DB_NAME=crater_test \
+          --set databases.crater.DB_NAME=crater \
           --set databases.crater.USERNAME=$CRATER_DB_USERNAME \
           --set databases.crater.PASSWORD=$CRATER_DB_PASSWORD \
-          --set databases.reports.DB_NAME=bahmni_reports_test \
+          --set databases.reports.DB_NAME=bahmni_reports \
           --set databases.reports.USERNAME=$REPORTS_DB_USERNAME \
           --set databases.reports.PASSWORD=$REPORTS_DB_PASSWORD
 
@@ -87,17 +74,15 @@ jobs:
       - name: Helm Upgrade
         run: |
           helm upgrade bahmni-dev . \
-          --set bahmni-openmrs.secrets.DB_ROOT_USERNAME=$RDS_USERNAME \
-          --set bahmni-openmrs.secrets.DB_ROOT_PASSWORD=$RDS_PASSWORD \
-          --set bahmni-openmrs.secrets.DB_USERNAME=$RDS_USERNAME \
-          --set bahmni-openmrs.secrets.DB_PASSWORD=$RDS_PASSWORD \
+          --set bahmni-openmrs.secrets.DB_USERNAME=$OPENMRS_DB_USERNAME \
+          --set bahmni-openmrs.secrets.DB_PASSWORD=$OPENMRS_DB_PASSWORD \
           --set bahmni-openmrs.secrets.DB_HOST=$RDS_HOST \
           --set reports.secrets.OPENMRS_DB_HOST=$RDS_HOST \
-          --set reports.secrets.OPENMRS_DB_USERNAME=$RDS_USERNAME \
-          --set reports.secrets.OPENMRS_DB_PASSWORD=$RDS_PASSWORD \
+          --set reports.secrets.OPENMRS_DB_USERNAME=$OPENMRS_DB_USERNAME \
+          --set reports.secrets.OPENMRS_DB_PASSWORD=$OPENMRS_DB_PASSWORD \
           --set reports.secrets.REPORTS_DB_SERVER=$RDS_HOST \
-          --set reports.secrets.REPORTS_DB_USERNAME=$RDS_USERNAME \
-          --set reports.secrets.REPORTS_DB_PASSWORD=$RDS_PASSWORD \
+          --set reports.secrets.REPORTS_DB_USERNAME=$REPORTS_DB_USERNAME \
+          --set reports.secrets.REPORTS_DB_PASSWORD=$REPORTS_DB_PASSWORD \
           --set hip.secrets.GATEWAY_CLIENT_ID=$GATEWAY_CLIENT_ID \
           --set hip.secrets.GATEWAY_CLIENT_SECRET=$GATEWAY_CLIENT_SECRET \
           --set hip.secrets.OPENMRS_PASSWORD=Admin123 \
