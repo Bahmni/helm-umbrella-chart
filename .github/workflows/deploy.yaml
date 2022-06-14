@@ -1,5 +1,4 @@
-name: Deploy to dev environment
-
+name: Deploy
 
 on:
   push:
@@ -12,6 +11,15 @@ on:
         required: true
         type: boolean
         default: false
+      environment:
+        description: 'Environment to deploy'
+        required: true
+        type: choice
+        default: dev
+        options:
+          - dev
+          - qa
+          - demo
 
 jobs:
   deploy:
@@ -19,6 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CLUSTER_NAME: bahmni-cluster-dev
+      ENVIRONMENT: ${{ github.event.inputs.environment || 'dev'}}
+      ENVIRONMENT_URL: ${{ github.event.inputs.environment == 'demo' && 'lite.mybahmni.in' || format('{0}.{1}', github.event.inputs.environment, 'lite.mybahmni.in') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -42,25 +52,29 @@ jobs:
       - name: Upsert Route53 A record with INGRESS_DNS
         run: |
           INGRESS_DNS=$(kubectl -n ingress-nginx  get svc ingress-nginx-controller -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
-          jq --arg ingress_dns "$INGRESS_DNS" '.Changes[].ResourceRecordSet.AliasTarget.DNSName = $ingress_dns' aws/route53/lite.mybahmni.in.json > recordset
+          jq --arg ingress_dns "$INGRESS_DNS" \
+             --arg environment_dns "$ENVIRONMENT_DNS" \
+             '.Changes[].ResourceRecordSet.AliasTarget.DNSName = $ingress_dns | .Changes[0].ResourceRecordSet.Name = $environment_dns | .Changes[1].ResourceRecordSet.Name = "payments-"+$environment_dns' \
+              aws/route53/lite.mybahmni.in.json > recordset
           aws route53 change-resource-record-sets --hosted-zone-id ${{ secrets.HOSTED_ZONE_ID }} --change-batch file://recordset
       - name: Setup Environment secrets
         shell: bash
-        run: bash .github/setupEnvSecrets.sh dev
+        run: bash .github/setupEnvSecrets.sh ${{ env.ENVIRONMENT }}
       - name: Setup databases
         if: ${{ github.event.inputs.enable_db_setup == 'true' }}
         run: |
           helm install db-setup db-setup --repo https://bahmni.github.io/helm-charts --devel --wait --wait-for-jobs --atomic --timeout 1m \
+          --namespace ${{ env.ENVIRONMENT }} --create-namespace \
           --set DB_HOST=$RDS_HOST \
           --set DB_ROOT_USERNAME=$RDS_USERNAME \
           --set DB_ROOT_PASSWORD=$RDS_PASSWORD \
-          --set databases.openmrs.DB_NAME=openmrs \
+          --set databases.openmrs.DB_NAME=openmrs_${{ env.ENVIRONMENT }} \
           --set databases.openmrs.USERNAME=$OPENMRS_DB_USERNAME \
           --set databases.openmrs.PASSWORD=$OPENMRS_DB_PASSWORD \
-          --set databases.crater.DB_NAME=crater \
+          --set databases.crater.DB_NAME=crater_${{ env.ENVIRONMENT }} \
           --set databases.crater.USERNAME=$CRATER_DB_USERNAME \
           --set databases.crater.PASSWORD=$CRATER_DB_PASSWORD \
-          --set databases.reports.DB_NAME=bahmni_reports \
+          --set databases.reports.DB_NAME=bahmni_reports_${{ env.ENVIRONMENT }} \
           --set databases.reports.USERNAME=$REPORTS_DB_USERNAME \
           --set databases.reports.PASSWORD=$REPORTS_DB_PASSWORD
 
@@ -73,30 +87,34 @@ jobs:
         run: ls charts
       - name: Helm Upgrade
         run: |
-          helm upgrade bahmni-dev . \
+          helm upgrade bahmni-${{ env.ENVIRONMENT }} . \
           --set bahmni-openmrs.secrets.DB_USERNAME=$OPENMRS_DB_USERNAME \
           --set bahmni-openmrs.secrets.DB_PASSWORD=$OPENMRS_DB_PASSWORD \
+          --set bahmni-openmrs.config.DB_NAME=openmrs_${{ env.ENVIRONMENT }} \
           --set bahmni-openmrs.secrets.DB_HOST=$RDS_HOST \
           --set reports.secrets.OPENMRS_DB_HOST=$RDS_HOST \
           --set reports.secrets.OPENMRS_DB_USERNAME=$OPENMRS_DB_USERNAME \
           --set reports.secrets.OPENMRS_DB_PASSWORD=$OPENMRS_DB_PASSWORD \
+          --set reports.config.OPENMRS_DB_NAME=openmrs_${{ env.ENVIRONMENT }} \
           --set reports.secrets.REPORTS_DB_SERVER=$RDS_HOST \
           --set reports.secrets.REPORTS_DB_USERNAME=$REPORTS_DB_USERNAME \
           --set reports.secrets.REPORTS_DB_PASSWORD=$REPORTS_DB_PASSWORD \
+          --set reports.config.REPORTS_DB_NAME=bahmni_reports_${{ env.ENVIRONMENT }} \
           --set hip.secrets.GATEWAY_CLIENT_ID=$GATEWAY_CLIENT_ID \
           --set hip.secrets.GATEWAY_CLIENT_SECRET=$GATEWAY_CLIENT_SECRET \
           --set hip.secrets.OPENMRS_PASSWORD=Admin123 \
-          --set hip.config.BAHMNI_URL=https://lite.mybahmni.in/openmrs \
+          --set hip.config.BAHMNI_URL=https://${{env.ENVIRONMENT_DNS}}/openmrs \
           --set hiu.secrets.HIU_CLIENT_ID=$GATEWAY_CLIENT_ID \
           --set hiu.secrets.HIU_CLIENT_SECRET=$GATEWAY_CLIENT_SECRET \
-          --set hiu.config.DATA_PUSH_URL=https://lite.mybahmni.in/hiu-api/data/notification \
-          --set hiu-ui.config.BACKEND_BASE_URL=https://lite.mybahmni.in \
+          --set hiu.config.DATA_PUSH_URL=https://${{env.ENVIRONMENT_DNS}}/hiu-api/data/notification \
+          --set hiu-ui.config.BACKEND_BASE_URL=https://${{env.ENVIRONMENT_DNS}} \
           --set global.postgresql.auth.postgresPassword=$PSQL_PASSWORD \
           --set rabbitmq.auth.username=$MQ_USERNAME \
           --set rabbitmq.auth.password=$MQ_PASSWORD \
-          --set ingress.host=lite.mybahmni.in \
-          --values=values/dev.yaml \
-          --install
+          --set ingress.host=${{env.ENVIRONMENT_DNS}} \
+          --values=values/${{ env.ENVIRONMENT }}.yaml \
+          --install \
+          --namespace ${{ env.ENVIRONMENT }} --create-namespace
   notification:
     name: Slack notification
     needs:
@@ -107,7 +125,7 @@ jobs:
       - name: Success
         if: ${{ needs.deploy.result == 'success' }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text":">🟢 Bahmni India Distro deployed. \n>*Bahmni* https://lite.mybahmni.in \n>*Payments* https://payments-lite.mybahmni.in \n> <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Umbrella Chart Job #${{github.run_id}}>"}' ${{ secrets.SLACK_WEBHOOK_URL }}
+          curl -X POST -H 'Content-type: application/json' --data '{"text":">🟢 Bahmni India Distro deployed. \n>*Bahmni* https://${{env.ENVIRONMENT_DNS}} \n>*Payments* https://payments-${{env.ENVIRONMENT_DNS}} \n> <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Umbrella Chart Job #${{github.run_id}}>"}' ${{ secrets.SLACK_WEBHOOK_URL }}
       - name: Failure
         if: ${{ needs.deploy.result == 'failure' }}
         run: |

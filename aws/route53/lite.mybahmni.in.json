@@ -4,7 +4,7 @@
     {
       "Action": "UPSERT",
       "ResourceRecordSet": {
-        "Name": "lite.mybahmni.in.",
+        "Name": "{environment domain replaced in the pipeline}.mybahmni.in",
         "Type": "A",
         "AliasTarget": {
             "HostedZoneId": "ZVDDRBQ08TROA",
@@ -16,7 +16,7 @@
     {
       "Action": "UPSERT",
       "ResourceRecordSet": {
-        "Name": "payments-lite.mybahmni.in.",
+        "Name": "payments-{environment domain replaced in the pipeline}.mybahmni.in",
         "Type": "A",
         "AliasTarget": {
             "HostedZoneId": "ZVDDRBQ08TROA",

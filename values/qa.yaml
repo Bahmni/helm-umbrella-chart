@@ -1,0 +1,68 @@
+metadata:
+  labels:
+    environment: qa
+
+openmrs:
+  enabled: true
+  metadata:
+    labels:
+      environment: qa
+bahmni-web:
+  enabled: true
+  metadata:
+    labels:
+      environment: qa
+bahmni-lab:
+  enabled: true
+  metadata:
+    labels:
+      environment: qa
+crater:
+  enabled: true
+  metadata:
+    labels:
+      environment: qa
+reports:
+  enabled: true
+  metadata:
+    labels:
+      environment: qa
+  config:
+    OPENMRS_HOST: "bahmni-openmrs"
+  image:
+    repository: bahmniindiadistro
+    name: reports
+    tag: 1.0.0-1
+hiu:
+  enabled: true
+  metadata:
+    labels:
+      environment: qa
+hiu-db:
+  enabled: true
+  metadata:
+    labels:
+      environment: qa
+hiu-ui:
+  enabled: true
+  metadata:
+    labels:
+      environment: qa
+hip:
+  enabled: true
+  metadata:
+    labels:
+      environment: qa
+otp-service:
+  enabled: true
+  metadata:
+    labels:
+      environment: qa
+abdm-db:
+  enabled: true
+rabbit-mq:
+  enabled: true
+
+rabbitmq:
+  auth:
+    erlangCookie: bahmni
