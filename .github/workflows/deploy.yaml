@@ -20,6 +20,9 @@ on:
           - dev
           - qa
           - demo
+env:
+    ENVIRONMENT: ${{ github.event.inputs.environment || 'dev'}}
+    ENVIRONMENT_DNS: ${{ github.event.inputs.environment || 'dev' == 'demo' && 'lite.mybahmni.in' || format('{0}.{1}', github.event.inputs.environment || 'dev', 'lite.mybahmni.in') }}
 
 jobs:
   deploy:
@@ -27,8 +30,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CLUSTER_NAME: bahmni-cluster-dev
-      ENVIRONMENT: ${{ github.event.inputs.environment || 'dev'}}
-      ENVIRONMENT_DNS: ${{ github.event.inputs.environment || 'dev' == 'demo' && 'lite.mybahmni.in' || format('{0}.{1}', github.event.inputs.environment || 'dev', 'lite.mybahmni.in') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
