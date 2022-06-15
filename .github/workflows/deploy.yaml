@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches: 
-      - BAH-1833
+      - main
   workflow_dispatch:
     inputs:
       enable_db_setup:
@@ -21,12 +21,12 @@ on:
           - qa
           - demo
 env:
-    ENVIRONMENT: ${{ github.event.inputs.environment || 'dev'}}
-    ENVIRONMENT_DNS: ${{ github.event.inputs.environment || 'dev' == 'demo' && 'lite.mybahmni.in' || format('{0}.{1}', github.event.inputs.environment || 'dev', 'lite.mybahmni.in') }}
+  ENVIRONMENT: ${{ github.event.inputs.environment || 'dev'}}
+  ENVIRONMENT_DNS: ${{ github.event.inputs.environment || 'dev' == 'demo' && 'lite.mybahmni.in' || format('{0}.{1}', github.event.inputs.environment || 'dev', 'lite.mybahmni.in') }}
 
 jobs:
   deploy:
-    name: Deploy
+    name: Deploy to ${{ github.event.inputs.environment || 'dev'}} environment
     runs-on: ubuntu-latest
     env:
       CLUSTER_NAME: bahmni-cluster-dev
@@ -62,7 +62,7 @@ jobs:
         shell: bash
         run: bash .github/setupEnvSecrets.sh ${{ env.ENVIRONMENT }}
       - name: Setup databases
-        if: ${{ github.event.inputs.enable_db_setup || 'true' }}
+        if: ${{ github.event.inputs.enable_db_setup == 'true' }}
         run: |
           helm install db-setup db-setup --repo https://bahmni.github.io/helm-charts --devel --wait --wait-for-jobs --atomic --timeout 1m \
           --namespace ${{ env.ENVIRONMENT }} --create-namespace \
@@ -80,8 +80,8 @@ jobs:
           --set databases.reports.PASSWORD=$REPORTS_DB_PASSWORD
 
       - name: Deleting db-setup helm release
-        if: ${{ github.event.inputs.enable_db_setup || 'true' }}
-        run: helm uninstall db-setup
+        if: ${{ github.event.inputs.enable_db_setup == 'true' }}
+        run: helm uninstall db-setup --namespace ${{ env.ENVIRONMENT }}
       - name: Helm Dependency Update
         run: helm dependency update
       - name: List Helm Dependencies
