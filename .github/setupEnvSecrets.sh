@@ -12,15 +12,15 @@ function exportWithMask {
 
 ENVIRONMENT=$1
 
-exportWithMask "/$ENVIRONMENT/rds/mysql/host" 'RDS_HOST'
-exportWithMask "/$ENVIRONMENT/rds/mysql/username" 'RDS_USERNAME'
-exportWithMask "/$ENVIRONMENT/rds/mysql/password" 'RDS_PASSWORD'
 exportWithMask "/$ENVIRONMENT/openmrs/DB_USERNAME" 'OPENMRS_DB_USERNAME'
 exportWithMask "/$ENVIRONMENT/openmrs/DB_PASSWORD" 'OPENMRS_DB_PASSWORD'
 exportWithMask "/$ENVIRONMENT/reports/DB_USERNAME" 'REPORTS_DB_USERNAME'
 exportWithMask "/$ENVIRONMENT/reports/DB_PASSWORD" 'REPORTS_DB_PASSWORD'
 exportWithMask "/$ENVIRONMENT/crater/DB_USERNAME" 'CRATER_DB_USERNAME'
 exportWithMask "/$ENVIRONMENT/crater/DB_PASSWORD" 'CRATER_DB_PASSWORD'
+exportWithMask "/dev/rds/mysql/host" 'RDS_HOST'
+exportWithMask "/dev/rds/mysql/username" 'RDS_USERNAME'
+exportWithMask "/dev/rds/mysql/password" 'RDS_PASSWORD'
 exportWithMask "/nonprod/rabbitmq/USERNAME" 'MQ_USERNAME'
 exportWithMask "/nonprod/rabbitmq/PASSWORD" 'MQ_PASSWORD'
 exportWithMask "/nonprod/psql/DB_PASSWORD" 'PSQL_PASSWORD'
