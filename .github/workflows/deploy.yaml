@@ -47,8 +47,8 @@ jobs:
       - name: Install Nginx Ingress
         run: |
           wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/aws/nlb-with-tls-termination/deploy.yaml
-          sed  -i.bak "s/XXX.XXX.XXX\/XX/10.0.0.0\/16/" deploy.yaml
-          sed  -i.bak "s/arn:aws:acm:us-west-2:XXXXXXXX:certificate\/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX/${{ secrets.MYBAHMNI_CERT_ARN }}/" deploy.yaml
+          sed  -i.bak "s|XXX.XXX.XXX/XX|10.0.0.0/16|" deploy.yaml
+          sed  -i.bak "s|arn:aws:acm:us-west-2:XXXXXXXX:certificate/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX|${{ secrets.MYBAHMNI_CERT_ARN }}|" deploy.yaml
           kubectl apply -f deploy.yaml
       - name: Upsert Route53 A record with INGRESS_DNS
         run: |
