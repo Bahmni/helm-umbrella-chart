@@ -27,6 +27,9 @@ env:
 jobs:
   deploy:
     name: Deploy to ${{ github.event.inputs.environment || 'dev'}} environment
+    environment:
+      name: ${{ github.event.inputs.environment || 'dev'}}
+      url: ${{ (github.event.inputs.environment || 'dev') == 'demo' && 'lite.mybahmni.in' || format('{0}.{1}', github.event.inputs.environment || 'dev', 'lite.mybahmni.in') }}
     runs-on: ubuntu-latest
     env:
       CLUSTER_NAME: bahmni-cluster-dev
