@@ -4,6 +4,8 @@ on:
   push:
     branches: 
       - main
+  repository_dispatch:
+    types: ["helm-publish-event"]
   workflow_dispatch:
     inputs:
       enable_db_setup:
