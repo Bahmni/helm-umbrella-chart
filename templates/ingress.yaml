@@ -80,6 +80,16 @@ spec:
                   number: 8092
           {{- end }}
 
+          {{- if index .Values "patient-documents" "enabled" }}
+          - path: /document_images
+            pathType: Prefix
+            backend:
+              service:
+                name: patient-documents
+                port:
+                  number: 8099
+          {{- end }}
+
     - host: payments-{{ .Values.ingress.host }}
       http:
         paths:

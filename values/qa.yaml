@@ -80,3 +80,9 @@ postgresql:
     persistence:
       accessModes:
         - ReadOnlyMany
+
+patient-documents:
+  enabled: true
+  metadata:
+    labels:
+      environment: qa

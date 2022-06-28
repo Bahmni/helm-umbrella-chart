@@ -64,3 +64,8 @@ dependencies:
     name: rabbitmq
     version: 9.1.4
     condition: rabbitmq.enabled
+
+  - repository: https://bahmni.github.io/helm-charts
+    name: patient-documents
+    version: ~1.0.0-0
+    condition: patient-documents.enabled

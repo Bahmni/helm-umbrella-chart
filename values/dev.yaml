@@ -48,3 +48,6 @@ postgresql:
     persistence:
       accessModes:
         - ReadOnlyMany
+
+patient-documents:
+  enabled: true
