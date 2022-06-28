@@ -8,7 +8,7 @@ dependencies:
   - repository: https://bahmniindiadistro.github.io/helm-charts
     name: bahmni-openmrs
     version: ~1.0.0-0
-    condition: openmrs.enabled
+    condition: bahmni-openmrs.enabled
 
   - repository: https://bahmniindiadistro.github.io/helm-charts
     name: bahmni-web
@@ -58,12 +58,12 @@ dependencies:
   - repository: https://charts.bitnami.com/bitnami
     name: postgresql
     version: 11.2.6
-    condition: abdm-db.enabled
+    condition: postgresql.enabled
 
   - repository: https://charts.bitnami.com/bitnami
     name: rabbitmq
     version: 9.1.4
-    condition: rabbitmq.enabled
+    condition: rabbit-mq.enabled
 
   - repository: https://bahmni.github.io/helm-charts
     name: patient-documents

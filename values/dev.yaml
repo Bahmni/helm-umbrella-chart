@@ -1,8 +1,11 @@
+global:
+  storageClass: efs-sc
+
 metadata:
   labels:
     environment: dev
 
-openmrs:
+bahmni-openmrs:
   enabled: true
 bahmni-web:
   enabled: true
@@ -22,32 +25,40 @@ hiu:
   enabled: true
 hiu-db:
   enabled: true
+  config:
+    JAVA_TOOL_OPTIONS: "-Djdbc.url=jdbc:postgresql://bahmni-dev-postgresql:5432/ -Djdbc.username=postgres -Djdbc.password=welcome -Djdbc.database=health_information_user"
 hiu-ui:
   enabled: true
+  config:
+    POSTGRES_HOST: bahmni-dev-postgresql
+    RABBITMQ_HOST: bahmni-dev-rabbitmq
 hip:
   enabled: true
+  config:
+    CONNECTION_STRING: "Host=bahmni-dev-postgresql;Port=5432;Username=postgres;Password=welcome;Database=hipservice"
+    RABBITMQ_HOST: "bahmni-dev-rabbitmq"
 otp-service:
   enabled: true
-abdm-db:
+rabbit-mq:
   enabled: true
-
-rabbitmq:
-  enabled: true
-  persistence:
-    accessModes:
-      - ReadWriteMany
-  auth:
-    erlangCookie: bahmni
 
 postgresql:
+  enabled: true
+  volumePermissions:
+    enabled: true
   primary:
     persistence:
+      storageClass: efs-sc
       accessModes:
         - ReadWriteMany
-  readReplicas:
-    persistence:
-      accessModes:
-        - ReadOnlyMany
+
+rabbitmq:
+  auth:
+    erlangCookie: bahmni
+  persistence:
+    storageClass: efs-sc
+    accessModes:
+      - ReadWriteMany
 
 patient-documents:
   enabled: true

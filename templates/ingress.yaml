@@ -112,14 +112,14 @@ metadata:
     environment: {{ .Values.metadata.labels.environment }}
   annotations:
     nginx.ingress.kubernetes.io/configuration-snippet: |
-      add_header Set-Cookie "reporting_session=$cookie_JSESSIONID;Domain=$http_host;Path=/;Max-Age=86400";
+      add_header Set-Cookie "reporting_session=$cookie_JSESSIONID;Path=/;Max-Age=86400";
 spec:
   ingressClassName: nginx
   rules:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          {{- if .Values.openmrs.enabled }}
+          {{- if index .Values "bahmni-openmrs" "enabled" }}
           - path: /openmrs
             pathType: Prefix
             backend:

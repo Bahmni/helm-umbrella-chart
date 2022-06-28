@@ -1,0 +1,70 @@
+global:
+  postgresql:
+    auth: 
+      postgresPassword: welcome
+
+metadata:
+  labels:
+    environment: local
+ingress:
+  host: bahmni.k8s
+
+bahmni-openmrs:
+  enabled: true
+  secrets:
+    DB_USERNAME: openmrs-user
+    DB_PASSWORD: password
+    DB_HOST: mysql
+  config:
+    DB_NAME: openmrs
+bahmni-web:
+  enabled: true
+bahmni-lab:
+  enabled: false
+crater:
+  enabled: true
+reports:
+  enabled: false
+  config:
+    OPENMRS_HOST: "bahmni-openmrs"
+    OPENMRS_DB_NAME: openmrs
+    REPORTS_DB_NAME: reports
+  secrets:
+    OPENMRS_DB_HOST: mysql
+    OPENMRS_DB_USERNAME: openmrs-user
+    OPENMRS_DB_PASSWORD: password
+    REPORTS_DB_SERVER: mysql
+    REPORTS_DB_USERNAME: reports-user
+    REPORTS_DB_PASSWORD: password
+  image:
+    repository: bahmniindiadistro
+    name: reports
+    tag: 1.0.0-1
+hiu:
+  enabled: false
+  config:
+    POSTGRES_HOST: bahmni-local-postgresql
+    RABBITMQ_HOST: bahmni-local-rabbitmq
+hiu-db:
+  enabled: false
+  config:
+    JAVA_TOOL_OPTIONS: "-Djdbc.url=jdbc:postgresql://bahmni-local-postgresql:5432/ -Djdbc.username=postgres -Djdbc.password=welcome -Djdbc.database=health_information_user"
+hiu-ui:
+  enabled: false
+hip:
+  enabled: false
+  config:
+    CONNECTION_STRING: "Host=bahmni-local-postgresql;Port=5432;Username=postgres;Password=welcome;Database=hipservice"
+    RABBITMQ_HOST: "bahmni-local-rabbitmq"
+otp-service:
+  enabled: false
+postgresql:
+  enabled: false
+rabbit-mq:
+  enabled: false
+
+rabbitmq:
+  auth:
+    username: bahmni
+    password: bahmni
+    erlangCookie: bahmni

@@ -2,7 +2,7 @@ metadata:
   labels:
     environment: demo
 
-openmrs:
+bahmni-openmrs:
   enabled: true
   metadata:
     labels:
@@ -40,16 +40,24 @@ hiu:
       environment: demo
 hiu-db:
   enabled: true
+  config:
+    JAVA_TOOL_OPTIONS: "-Djdbc.url=jdbc:postgresql://bahmni-demo-postgresql:5432/ -Djdbc.username=postgres -Djdbc.password=welcome -Djdbc.database=health_information_user"
   metadata:
     labels:
       environment: demo
 hiu-ui:
   enabled: true
+  config:
+    POSTGRES_HOST: bahmni-demo-postgresql
+    RABBITMQ_HOST: bahmni-demo-rabbitmq
   metadata:
     labels:
       environment: demo
 hip:
   enabled: true
+  config:
+    CONNECTION_STRING: "Host=bahmni-demo-postgresql;Port=5432;Username=postgres;Password=welcome;Database=hipservice"
+    RABBITMQ_HOST: "bahmni-demo-rabbitmq"
   metadata:
     labels:
       environment: demo
@@ -58,28 +66,14 @@ otp-service:
   metadata:
     labels:
       environment: demo
-abdm-db:
+postgresql:
   enabled: true
 rabbit-mq:
   enabled: true
 
 rabbitmq:
-  enabled: true
-  persistence:
-    accessModes:
-      - ReadWriteMany
   auth:
     erlangCookie: bahmni
-
-postgresql:
-  primary:
-    persistence:
-      accessModes:
-        - ReadWriteMany
-  readReplicas:
-    persistence:
-      accessModes:
-        - ReadOnlyMany
 
 patient-documents:
   enabled: true
