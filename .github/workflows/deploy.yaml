@@ -5,7 +5,7 @@ on:
     branches: 
       - main
   repository_dispatch:
-    types: ["helm-publish-event"]
+    types: ["bahmni-helm-publish-event","bahmniindia-helm-publish-event"]
   workflow_dispatch:
     inputs:
       enable_db_setup:
