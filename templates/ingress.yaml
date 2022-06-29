@@ -40,36 +40,6 @@ spec:
                   number: 8051
           {{- end }}
 
-          {{- if .Values.hiu.enabled }}
-          - path: /hiu-api
-            pathType: Prefix
-            backend:
-              service:
-                name: hiu
-                port:
-                  number: 9053
-          {{- end }}
-
-          {{- if index .Values "hiu-ui" "enabled" }}
-          - path: /hiuser
-            pathType: Prefix
-            backend:
-              service:
-                name: hiu-ui
-                port:
-                  number: 5000
-          {{- end }}
-
-          {{- if .Values.hip.enabled }}
-          - path: /hiprovider
-            pathType: Prefix
-            backend:
-              service:
-                name: hip
-                port:
-                  number: 8000
-          {{- end }}
-
           {{- if index .Values "otp-service" "enabled" }}
           - path: /otp-service
             pathType: Prefix
@@ -118,3 +88,56 @@ spec:
                 port:
                   number: 8080
           {{- end }}
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: abdm-ingress
+  labels:
+    environment: {{ .Values.metadata.labels.environment }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location ^~ /hiprovider {
+          if ($http_X-HIU-ID != '') {
+            rewrite  ^/hiprovider(.*) /hiu$1 last;
+          }
+          rewrite  ^/hiprovider(.*) /hip$1 last;
+      }
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          {{- if .Values.hiu.enabled }}
+          - path: /hiu/(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: hiu
+                port:
+                  number: 9053
+          {{- end }}
+
+          {{- if .Values.hip.enabled }}
+          - path: /hip/(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: hip
+                port:
+                  number: 8000
+          {{- end }}
+
+          {{- if index .Values "hiu-ui" "enabled" }}
+          - path: /hiuser(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: hiu-ui
+                port:
+                  number: 5000
+          {{- end }}
+
