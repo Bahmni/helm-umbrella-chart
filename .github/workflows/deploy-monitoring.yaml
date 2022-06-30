@@ -51,8 +51,7 @@ jobs:
           --set grafana.adminPassword=$GRAFANA_ADMIN_PASSWORD \
           --set 'grafana.grafana\.ini.auth\.github.client_id'=$GITHUB_OAUTH_CLIENT_ID \
           --set 'grafana.grafana\.ini.auth\.github.client_secret'=$GITHUB_OAUTH_CLIENT_SECRET \
-          --install \
-          --version=35.5.0
+          --install
 
       - name: Helm Upgrade Logging Stack
         run: helm upgrade --install loki --namespace=monitoring grafana/loki-stack
