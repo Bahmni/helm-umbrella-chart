@@ -1,5 +1,5 @@
-global:
-  storageClass: efs-sc
+# global:
+#   storageClass: efs-sc
 
 metadata:
   labels:
@@ -44,21 +44,21 @@ rabbit-mq:
 
 postgresql:
   enabled: true
-  volumePermissions:
-    enabled: true
-  primary:
-    persistence:
-      storageClass: efs-sc
-      accessModes:
-        - ReadWriteMany
+#   volumePermissions:
+#     enabled: true
+#   primary:
+#     persistence:
+#       storageClass: efs-sc
+#       accessModes:
+#         - ReadWriteMany
 
 rabbitmq:
   auth:
     erlangCookie: bahmni
-  persistence:
-    storageClass: efs-sc
-    accessModes:
-      - ReadWriteMany
+#   persistence:
+#     storageClass: efs-sc
+#     accessModes:
+#       - ReadWriteMany
 
 patient-documents:
   enabled: true
