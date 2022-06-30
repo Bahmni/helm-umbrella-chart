@@ -3,7 +3,7 @@ name: Deploy Monitoring and Logging
 on:
   push:
     branches:
-      - BAH-1948
+      - main
     paths:
       - values/monitoring.yaml
       - aws/route53/monitoring-lite.mybahmni.in.json
