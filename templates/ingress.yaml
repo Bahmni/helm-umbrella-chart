@@ -111,7 +111,7 @@ metadata:
     nginx.ingress.kubernetes.io/server-snippet: |
       location ^~ /hiprovider {
           if ($http_X-HIU-ID != '') {
-            rewrite  ^/hiprovider(.*) /hiu$1 last;
+            rewrite  ^/hiprovider(.*) /hiu-api$1 last;
           }
           rewrite  ^/hiprovider(.*) /hip$1 last;
       }
@@ -122,7 +122,7 @@ spec:
       http:
         paths:
           {{- if .Values.hiu.enabled }}
-          - path: /hiu/(.*)
+          - path: /hiu-api/(.*)
             pathType: Prefix
             backend:
               service:
