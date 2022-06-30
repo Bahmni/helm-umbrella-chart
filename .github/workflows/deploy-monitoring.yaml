@@ -1,9 +1,9 @@
-name: Deploy monitoring setup
+name: Deploy Monitoring and Logging
 
 on:
   push:
     branches:
-      - master
+      - BAH-1948
     paths:
       - values/monitoring.yaml
       - aws/route53/monitoring-lite.mybahmni.in.json
@@ -12,8 +12,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy-monitoring:
-    name: Deploy Monitoring
+  deploy-monitoring-logging:
+    name: Deploy Monitoring & Logging
     runs-on: ubuntu-latest
     env:
       CLUSTER_NAME: bahmni-cluster-nonprod
@@ -23,6 +23,7 @@ jobs:
       - name: Add helm repo
         run: |
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo add grafana https://grafana.github.io/helm-charts
           helm repo update
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -40,7 +41,7 @@ jobs:
           INGRESS_DNS=$(kubectl -n ingress-nginx  get svc ingress-nginx-controller -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
           jq --arg ingress_dns "$INGRESS_DNS" '.Changes[].ResourceRecordSet.AliasTarget.DNSName = $ingress_dns' aws/route53/monitoring-lite.mybahmni.in.json > recordset
           aws route53 change-resource-record-sets --hosted-zone-id ${{ secrets.HOSTED_ZONE_ID }} --change-batch file://recordset
-      - name: Helm Upgrade
+      - name: Helm Upgrade Monitoring Stack
         run: |
           GRAFANA_ADMIN_PASSWORD=$(aws ssm get-parameter --with-decryption --name "/nonprod/grafana/ADMIN_PASSWORD" --query "Parameter.Value" --output text)
           GITHUB_OAUTH_CLIENT_ID=$(aws ssm get-parameter --with-decryption --name "/nonprod/grafana/oauth/github/bahmniindia/CLIENT_ID" --query "Parameter.Value" --output text)
@@ -52,3 +53,7 @@ jobs:
           --set 'grafana.grafana\.ini.auth\.github.client_secret'=$GITHUB_OAUTH_CLIENT_SECRET \
           --install \
           --version=35.5.0
+
+      - name: Helm Upgrade Logging Stack
+        run: helm upgrade --install loki --namespace=monitoring grafana/loki-stack
+
