@@ -10,6 +10,8 @@ grafana:
     storageClassName: bahmni-efs-sc
     accessModes:
       - ReadWriteMany
+  initChownData:
+    enabled: false
   grafana.ini:
     server:
       root_url: https://monitoring-lite.mybahmni.in
