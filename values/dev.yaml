@@ -63,3 +63,5 @@ rabbitmq:
 
 patient-documents:
   enabled: true
+  config:
+    OPENMRS_HOST: "bahmni-openmrs"

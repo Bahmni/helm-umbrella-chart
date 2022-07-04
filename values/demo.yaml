@@ -80,3 +80,5 @@ patient-documents:
   metadata:
     labels:
       environment: demo
+  config:
+    OPENMRS_HOST: "bahmni-openmrs"

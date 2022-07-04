@@ -68,3 +68,8 @@ rabbitmq:
     username: bahmni
     password: bahmni
     erlangCookie: bahmni
+
+patient-documents:
+  enabled: true
+  config:
+    OPENMRS_HOST: "bahmni-openmrs"
