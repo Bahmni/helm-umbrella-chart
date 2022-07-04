@@ -5,6 +5,11 @@ grafana:
     hosts:
       - monitoring-lite.mybahmni.in
   defaultDashboardsTimezone: browser
+  persistence:
+    enabled: true
+    storageClassName: bahmni-efs-sc
+    accessModes:
+      - ReadWriteMany
   grafana.ini:
     server:
       root_url: https://monitoring-lite.mybahmni.in
