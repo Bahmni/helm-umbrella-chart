@@ -173,7 +173,7 @@ kubectl apply -f k8s-rbac/eks-developer.yaml
 ### Create Identity Mapping
 ```
 eksctl create iamidentitymapping \
---cluster bahmni-cluster-dev \
+--cluster bahmni-cluster-nonprod \
 --arn  arn:aws:iam::{YourAccountNumber}:role/BahmniEKSDeveloperRoleForIAMUsers \
 --group eks-developer-group \
 --username assume-role-user \

@@ -1,3 +1,6 @@
+global:
+  storageClass: bahmni-efs-sc
+  
 metadata:
   labels:
     environment: demo
@@ -66,14 +69,26 @@ otp-service:
   metadata:
     labels:
       environment: demo
+
+
 postgresql:
   enabled: true
-rabbit-mq:
-  enabled: true
+  volumePermissions:
+    enabled: true
+  primary:
+    persistence:
+      storageClass: bahmni-efs-sc
+      accessModes:
+        - ReadWriteMany
 
 rabbitmq:
+  enabled: true
   auth:
     erlangCookie: bahmni
+  persistence:
+    storageClass: bahmni-efs-sc
+    accessModes:
+      - ReadWriteMany
 
 patient-documents:
   enabled: true

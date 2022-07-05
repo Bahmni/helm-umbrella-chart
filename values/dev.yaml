@@ -39,8 +39,6 @@ hip:
     RABBITMQ_HOST: "bahmni-dev-rabbitmq"
 otp-service:
   enabled: true
-rabbit-mq:
-  enabled: true
 
 postgresql:
   enabled: true

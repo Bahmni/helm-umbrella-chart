@@ -3,7 +3,6 @@ name: Deploy
 on:
   push:
     branches: 
-      - BAH-1903
       - main
   repository_dispatch:
     types: ["bahmni-helm-publish-event","bahmniindia-helm-publish-event"]
@@ -119,6 +118,7 @@ jobs:
           --set rabbitmq.auth.username=$MQ_USERNAME \
           --set rabbitmq.auth.password=$MQ_PASSWORD \
           --set ingress.host=${{env.ENVIRONMENT_DNS}} \
+          --set efs.fileSystemId=${{env.EFS_FILESYSTEM_ID}} \
           --values=values/${{ env.ENVIRONMENT }}.yaml \
           --install \
           --namespace ${{ env.ENVIRONMENT }} --create-namespace
