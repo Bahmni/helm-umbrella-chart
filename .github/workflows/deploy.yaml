@@ -4,6 +4,8 @@ on:
   push:
     branches: 
       - main
+  repository_dispatch:
+    types: ["bahmni-helm-publish-event","bahmniindia-helm-publish-event"]
   workflow_dispatch:
     inputs:
       enable_db_setup:
@@ -116,6 +118,7 @@ jobs:
           --set rabbitmq.auth.username=$MQ_USERNAME \
           --set rabbitmq.auth.password=$MQ_PASSWORD \
           --set ingress.host=${{env.ENVIRONMENT_DNS}} \
+          --set efs.fileSystemId=${{env.EFS_FILESYSTEM_ID}} \
           --values=values/${{ env.ENVIRONMENT }}.yaml \
           --install \
           --namespace ${{ env.ENVIRONMENT }} --create-namespace

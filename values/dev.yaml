@@ -1,5 +1,5 @@
 global:
-  storageClass: efs-sc
+  storageClass: bahmni-efs-sc
 
 metadata:
   labels:
@@ -39,8 +39,6 @@ hip:
     RABBITMQ_HOST: "bahmni-dev-rabbitmq"
 otp-service:
   enabled: true
-rabbit-mq:
-  enabled: true
 
 postgresql:
   enabled: true
@@ -48,14 +46,15 @@ postgresql:
     enabled: true
   primary:
     persistence:
-      storageClass: efs-sc
+      storageClass: bahmni-efs-sc
       accessModes:
         - ReadWriteMany
 
 rabbitmq:
+  enabled: true
   auth:
     erlangCookie: bahmni
   persistence:
-    storageClass: efs-sc
+    storageClass: bahmni-efs-sc
     accessModes:
       - ReadWriteMany

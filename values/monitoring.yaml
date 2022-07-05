@@ -5,6 +5,13 @@ grafana:
     hosts:
       - monitoring-lite.mybahmni.in
   defaultDashboardsTimezone: browser
+  persistence:
+    enabled: true
+    storageClassName: bahmni-efs-sc
+    accessModes:
+      - ReadWriteMany
+  initChownData:
+    enabled: false
   grafana.ini:
     server:
       root_url: https://monitoring-lite.mybahmni.in
@@ -18,4 +25,9 @@ grafana:
       allowed_organizations: Bahmni BahmniIndiaDistro
     users:
       viewers_can_edit: true
-
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      access: proxy
+      url: http://loki:3100
+      editable: true

@@ -1,0 +1,21 @@
+# This is a temporary PV for postgresql helm chart.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgresql-efs-volume-{{ .Values.metadata.labels.environment }}
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  mountOptions:
+    - tls
+  persistentVolumeReclaimPolicy: Retain
+  claimRef:
+    namespace: {{ .Values.metadata.labels.environment }}
+    name: data-bahmni-{{ .Values.metadata.labels.environment }}-postgresql-0
+  storageClassName: bahmni-efs-sc
+  csi:
+    driver: efs.csi.aws.com
+    volumeHandle: {{ .Values.efs.fileSystemId }}
