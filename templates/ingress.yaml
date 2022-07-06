@@ -60,6 +60,16 @@ spec:
                   number: 8099
           {{- end }}
 
+          {{- if index .Values "patient-documents" "enabled" }}
+          - path: /openmrs/auth
+            pathType: Prefix
+            backend:
+              service:
+                name: patient-documents
+                port:
+                  number: 8099
+          {{- end }}
+
     - host: payments-{{ .Values.ingress.host }}
       http:
         paths:
