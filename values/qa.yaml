@@ -1,32 +1,20 @@
+global:
+  storageClass: bahmni-efs-sc
+
 metadata:
   labels:
     environment: qa
 
 bahmni-openmrs:
   enabled: true
-  metadata:
-    labels:
-      environment: qa
 bahmni-web:
   enabled: true
-  metadata:
-    labels:
-      environment: qa
 bahmni-lab:
   enabled: true
-  metadata:
-    labels:
-      environment: qa
 crater:
   enabled: true
-  metadata:
-    labels:
-      environment: qa
 reports:
   enabled: true
-  metadata:
-    labels:
-      environment: qa
   config:
     OPENMRS_HOST: "bahmni-openmrs"
   image:
@@ -63,22 +51,22 @@ hip:
       environment: qa
 otp-service:
   enabled: true
-  metadata:
-    labels:
-      environment: qa
+
 postgresql:
   enabled: true
-rabbit-mq:
-  enabled: true
+  volumePermissions:
+    enabled: true
+  primary:
+    persistence:
+      storageClass: bahmni-efs-sc
+      accessModes:
+        - ReadWriteMany
 
 rabbitmq:
+  enabled: true
   auth:
     erlangCookie: bahmni
-
-patient-documents:
-  enabled: true
-  metadata:
-    labels:
-      environment: qa
-  config:
-    OPENMRS_HOST: "bahmni-openmrs"
+  persistence:
+    storageClass: bahmni-efs-sc
+    accessModes:
+      - ReadWriteMany
