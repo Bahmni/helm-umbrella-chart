@@ -188,7 +188,7 @@ eksctl create iamidentitymapping \
 ## Access RDS databases
 To access RDS databases:
 
-Run the script `connectmysqlrds.sh`
+Navigate to the project root directory and run the script `connectmysqlrds.sh`
 ```
 ./connectmysqlrds.sh <environment-name> <application-name>
 
