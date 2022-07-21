@@ -4,6 +4,8 @@ global:
 metadata:
   labels:
     environment: dev
+  ingress:
+    PROXY_BODY_SIZE: "7m"
 
 bahmni-openmrs:
   enabled: true

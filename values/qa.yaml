@@ -1,9 +1,11 @@
 global:
   storageClass: bahmni-efs-sc
-  
+
 metadata:
   labels:
     environment: qa
+  ingress:
+    PROXY_BODY_SIZE: "7m"
 
 bahmni-openmrs:
   enabled: true
@@ -82,7 +84,6 @@ hip-atomfeed:
   metadata:
     labels:
       environment: qa
-
 
 postgresql:
   enabled: true

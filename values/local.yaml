@@ -1,11 +1,13 @@
 global:
   postgresql:
-    auth: 
+    auth:
       postgresPassword: welcome
 
 metadata:
   labels:
     environment: local
+  ingress:
+    PROXY_BODY_SIZE: "7m"
 ingress:
   host: bahmni.k8s
 
