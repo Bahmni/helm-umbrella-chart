@@ -4,6 +4,8 @@ metadata:
   name: bahmni-ingress
   labels:
     environment: {{ .Values.metadata.labels.environment }}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "5m"
 spec:
   ingressClassName: nginx
   rules:
@@ -93,6 +95,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/configuration-snippet: |
       add_header Set-Cookie "reporting_session=$cookie_JSESSIONID;Path=/;Max-Age=86400";
+    nginx.ingress.kubernetes.io/proxy-body-size: "5m"
 spec:
   ingressClassName: nginx
   rules:
