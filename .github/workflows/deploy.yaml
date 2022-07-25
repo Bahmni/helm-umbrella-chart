@@ -145,3 +145,25 @@ jobs:
         if: ${{ needs.deploy.result == 'failure' }}
         run: |
           curl -X POST -H 'Content-type: application/json' --data '{"text":"🔴 Bahmni India Distro deployment failed!!! This is where you go look what happened → <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Umbrella Chart Job #${{github.run_id}}>"}' ${{ secrets.SLACK_WEBHOOK_URL }}
+  trigger-e2e-smoke-test-lite:
+      name: Trigger E2E Smoke Test in Dev.Lite 
+      needs:
+        - deploy
+      runs-on: ubuntu-latest
+      steps:
+        - name: Create repository_dispatch
+          env:
+            REPOSITORY_NAME: "bahmni-e2e-tests"
+            ORG_NAME: "Bahmni"
+            EVENT_TYPE: "Smoke Test Lite"
+            TEST_COMMAND: "--env dev.lite --tags 'lite'"
+          if: ${{ needs.deploy.result == 'success' }}
+          run: |
+            trigger_result=$(curl -s -o trigger_response.txt -w "%{http_code}" -X POST -H "Accept: application/vnd.github.v3+json" -H 'authorization: Bearer ${{ secrets.BAHMNI_PAT }}' https://api.github.com/repos/${ORG_NAME}/${REPOSITORY_NAME}/dispatches -d '{"event_type":"'"${EVENT_TYPE}"'","client_payload":{"testCommand":"'"${TEST_COMMAND}"'","environment":"'"${github.event.inputs.environment}"'"}}')
+            if [ $trigger_result == 204 ];then
+              echo "Trigger to $ORG_NAME/$REPOSITORY_NAME Success"
+            else
+              echo "Trigger to $ORG_NAME/$REPOSITORY_NAME Failed"
+              cat trigger_response.txt
+              exit 1
+            fi
