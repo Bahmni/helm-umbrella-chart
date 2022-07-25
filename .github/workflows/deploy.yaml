@@ -159,7 +159,7 @@ jobs:
             TEST_COMMAND: "--env dev.lite --tags 'lite'"
           if: ${{ needs.deploy.result == 'success' }}
           run: |
-            trigger_result=$(curl -s -o trigger_response.txt -w "%{http_code}" -X POST -H "Accept: application/vnd.github.v3+json" -H 'authorization: Bearer ${{ secrets.BAHMNI_PAT }}' https://api.github.com/repos/${ORG_NAME}/${REPOSITORY_NAME}/dispatches -d '{"event_type":"'"${EVENT_TYPE}"'","client_payload":{"testCommand":"'"${TEST_COMMAND}"'","environment":"'"${github.event.inputs.environment}"'"}}')
+            trigger_result=$(curl -s -o trigger_response.txt -w "%{http_code}" -X POST -H "Accept: application/vnd.github.v3+json" -H 'authorization: Bearer ${{ secrets.BAHMNI_PAT }}' https://api.github.com/repos/${ORG_NAME}/${REPOSITORY_NAME}/dispatches -d '{"event_type":"'"${EVENT_TYPE}"'","client_payload":{"testCommand":"'"${TEST_COMMAND}"'","environment":"'"${{github.event.inputs.environment}}"'"}}')
             if [ $trigger_result == 204 ];then
               echo "Trigger to $ORG_NAME/$REPOSITORY_NAME Success"
             else
