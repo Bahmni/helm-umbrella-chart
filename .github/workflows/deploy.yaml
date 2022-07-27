@@ -4,7 +4,6 @@ on:
   push:
     branches: 
       - main
-      - e2e_Trigger_Fix
   repository_dispatch:
     types: ["bahmni-helm-publish-event","bahmniindia-helm-publish-event"]
   workflow_dispatch:
