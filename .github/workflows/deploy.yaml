@@ -151,7 +151,7 @@ jobs:
       needs:
         - deploy
       runs-on: ubuntu-latest
-      if: ${{ env.ENVIRONMENT == 'dev' && needs.deploy.result == 'success' }}
+      if: ${{ ((github.event.inputs.environment || 'dev') == 'dev') && (needs.deploy.result == 'success') }}
       steps:
         - name: Create repository_dispatch
           env:
