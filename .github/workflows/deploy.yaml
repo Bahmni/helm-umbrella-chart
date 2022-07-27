@@ -4,6 +4,7 @@ on:
   push:
     branches: 
       - main
+      - e2e_Trigger_Fix
   repository_dispatch:
     types: ["bahmni-helm-publish-event","bahmniindia-helm-publish-event"]
   workflow_dispatch:
@@ -150,16 +151,17 @@ jobs:
       needs:
         - deploy
       runs-on: ubuntu-latest
+      if: ${{ env.ENVIRONMENT == 'dev' && needs.deploy.result == 'success' }}
       steps:
         - name: Create repository_dispatch
           env:
             REPOSITORY_NAME: "bahmni-e2e-tests"
             ORG_NAME: "Bahmni"
-            EVENT_TYPE: "Smoke Test Lite"
-            TEST_COMMAND: "--env dev.lite --tags 'lite'"
-          if: ${{ needs.deploy.result == 'success' }}
+            EVENT_TYPE: "Smoke-Test-Dev-Lite"
+            TEST_ENV: "dev.lite"
+            TEST_CONTEXT: "lite"
           run: |
-            trigger_result=$(curl -s -o trigger_response.txt -w "%{http_code}" -X POST -H "Accept: application/vnd.github.v3+json" -H 'authorization: Bearer ${{ secrets.BAHMNI_PAT }}' https://api.github.com/repos/${ORG_NAME}/${REPOSITORY_NAME}/dispatches -d '{"event_type":"'"${EVENT_TYPE}"'","client_payload":{"testCommand":"'"${TEST_COMMAND}"'","environment":"'"${{github.event.inputs.environment}}"'"}}')
+            trigger_result=$(curl -s -o trigger_response.txt -w "%{http_code}" -X POST -H "Accept: application/vnd.github.v3+json" -H 'authorization: Bearer ${{ secrets.BAHMNI_PAT }}' https://api.github.com/repos/${ORG_NAME}/${REPOSITORY_NAME}/dispatches -d '{"event_type":"'"${EVENT_TYPE}"'","client_payload":{"TEST_ENV":"'"${TEST_ENV}"'","TEST_CONTEXT":"'"${TEST_CONTEXT}"'"}}')
             if [ $trigger_result == 204 ];then
               echo "Trigger to $ORG_NAME/$REPOSITORY_NAME Success"
             else
