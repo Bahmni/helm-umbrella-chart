@@ -11,7 +11,7 @@ metadata:
 ingress:
   host: bahmni.k8s
 
-bahmni-openmrs:
+openmrs:
   enabled: true
   secrets:
     DB_USERNAME: openmrs-user
@@ -45,7 +45,7 @@ crater:
 reports:
   enabled: false
   config:
-    OPENMRS_HOST: "bahmni-openmrs"
+    OPENMRS_HOST: "openmrs"
     OPENMRS_DB_NAME: openmrs
     REPORTS_DB_NAME: reports
   secrets:
@@ -89,4 +89,4 @@ rabbitmq:
 patient-documents:
   enabled: true
   config:
-    OPENMRS_HOST: "bahmni-openmrs"
+    OPENMRS_HOST: "openmrs"

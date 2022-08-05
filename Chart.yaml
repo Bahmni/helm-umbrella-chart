@@ -6,9 +6,9 @@ version: 1.0.0
 
 dependencies:
   - repository: https://bahmniindiadistro.github.io/helm-charts
-    name: bahmni-openmrs
+    name: openmrs
     version: ~1.0.0-0
-    condition: bahmni-openmrs.enabled
+    condition: openmrs.enabled
 
   - repository: https://bahmniindiadistro.github.io/helm-charts
     name: bahmni-web

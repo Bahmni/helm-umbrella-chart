@@ -7,7 +7,7 @@ metadata:
   ingress:
     PROXY_BODY_SIZE: "7m"
 
-bahmni-openmrs:
+openmrs:
   enabled: true
   metadata:
     labels:
@@ -41,7 +41,7 @@ reports:
     labels:
       environment: qa
   config:
-    OPENMRS_HOST: "bahmni-openmrs"
+    OPENMRS_HOST: "openmrs"
 hiu:
   enabled: true
   metadata:
@@ -107,4 +107,4 @@ patient-documents:
     labels:
       environment: qa
   config:
-    OPENMRS_HOST: "bahmni-openmrs"
+    OPENMRS_HOST: "openmrs"

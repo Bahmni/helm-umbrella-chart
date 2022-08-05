@@ -102,12 +102,12 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          {{- if index .Values "bahmni-openmrs" "enabled" }}
+          {{- if index .Values "openmrs" "enabled" }}
           - path: /openmrs
             pathType: Prefix
             backend:
               service:
-                name: bahmni-openmrs
+                name: openmrs
                 port:
                   number: 8080
           {{- end }}

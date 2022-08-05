@@ -94,10 +94,10 @@ jobs:
       - name: Helm Upgrade
         run: |
           helm upgrade bahmni-${{ env.ENVIRONMENT }} . \
-          --set bahmni-openmrs.secrets.DB_USERNAME=$OPENMRS_DB_USERNAME \
-          --set bahmni-openmrs.secrets.DB_PASSWORD=$OPENMRS_DB_PASSWORD \
-          --set bahmni-openmrs.config.DB_NAME=openmrs_${{ env.ENVIRONMENT }} \
-          --set bahmni-openmrs.secrets.DB_HOST=$RDS_HOST \
+          --set openmrs.secrets.DB_USERNAME=$OPENMRS_DB_USERNAME \
+          --set openmrs.secrets.DB_PASSWORD=$OPENMRS_DB_PASSWORD \
+          --set openmrs.config.DB_NAME=openmrs_${{ env.ENVIRONMENT }} \
+          --set openmrs.secrets.DB_HOST=$RDS_HOST \
           --set reports.secrets.OPENMRS_DB_HOST=$RDS_HOST \
           --set reports.secrets.OPENMRS_DB_USERNAME=$OPENMRS_DB_USERNAME \
           --set reports.secrets.OPENMRS_DB_PASSWORD=$OPENMRS_DB_PASSWORD \
