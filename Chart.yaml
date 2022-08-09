@@ -74,3 +74,8 @@ dependencies:
     name: hip-atomfeed
     version: ~1.0.0-0
     condition: hip-atomfeed.enabled
+
+  - repository: https://bahmni.github.io/helm-charts
+    name: appointments
+    version: ~1.0.0-0
+    condition: appointments.enabled

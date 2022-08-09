@@ -108,3 +108,6 @@ patient-documents:
       environment: demo
   config:
     OPENMRS_HOST: "openmrs"
+
+appointments:
+  enabled: true

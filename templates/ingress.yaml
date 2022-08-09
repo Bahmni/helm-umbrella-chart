@@ -72,6 +72,16 @@ spec:
                   number: 8099
           {{- end }}
 
+          {{- if index .Values "appointments" "enabled" }}
+          - path: /appointments
+            pathType: Prefix
+            backend:
+              service:
+                name: appointments
+                port:
+                  number: 80
+          {{- end }}
+
     - host: payments-{{ .Values.ingress.host }}
       http:
         paths:
