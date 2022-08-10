@@ -1,5 +1,7 @@
 global:
   storageClass: bahmni-efs-sc
+  nodeSelector:
+    eks.amazonaws.com/nodegroup: nonprod
 
 metadata:
   labels:
@@ -95,6 +97,8 @@ postgresql:
       storageClass: bahmni-efs-sc
       accessModes:
         - ReadWriteMany
+    nodeSelector:
+      eks.amazonaws.com/nodegroup: nonprod
 
 rabbitmq:
   enabled: true
@@ -104,6 +108,8 @@ rabbitmq:
     storageClass: bahmni-efs-sc
     accessModes:
       - ReadWriteMany
+  nodeSelector:
+    eks.amazonaws.com/nodegroup: nonprod
 
 patient-documents:
   enabled: true

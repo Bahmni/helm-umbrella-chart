@@ -54,5 +54,7 @@ jobs:
           --install
 
       - name: Helm Upgrade Logging Stack
-        run: helm upgrade --install loki --namespace=monitoring grafana/loki-stack
+        run: |
+          helm upgrade --install loki --namespace=monitoring grafana/loki-stack \
+          --values=values/logging.yaml
 
