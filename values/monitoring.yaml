@@ -25,9 +25,7 @@ grafana:
       url: http://loki:3100
       editable: true
       isDefault: false
-  sidecar:
-    datasources:
-      enabled: false
+
   nodeSelector:
     eks.amazonaws.com/nodegroup: nonprod
 

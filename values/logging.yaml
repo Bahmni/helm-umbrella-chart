@@ -1,3 +1,7 @@
 loki:
   nodeSelector:
     eks.amazonaws.com/nodegroup: nonprod
+grafana:
+  sidecar:
+    datasources:
+      enabled: false
