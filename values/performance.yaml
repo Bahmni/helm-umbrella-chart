@@ -1,11 +1,11 @@
 global:
   storageClass: bahmni-efs-sc
   nodeSelector:
-    eks.amazonaws.com/nodegroup: nonprod
+    eks.amazonaws.com/nodegroup: performance
 
 metadata:
   labels:
-    environment: demo
+    environment: performance
   ingress:
     PROXY_BODY_SIZE: "7m"
 
@@ -13,22 +13,22 @@ openmrs:
   enabled: true
   metadata:
     labels:
-      environment: demo
+      environment: performance
 bahmni-web:
   enabled: true
   metadata:
     labels:
-      environment: demo
+      environment: performance
 bahmni-lab:
   enabled: true
   metadata:
     labels:
-      environment: demo
+      environment: performance
 crater:
   enabled: true
   metadata:
     labels:
-      environment: demo
+      environment: performance
   config:
     AUTO_INSTALL: "true"
     ADMIN_NAME: Super Man
@@ -41,57 +41,54 @@ reports:
   enabled: true
   metadata:
     labels:
-      environment: demo
+      environment: performance
   config:
     OPENMRS_HOST: "openmrs"
 hiu:
   enabled: true
   config:
-    POSTGRES_HOST: "bahmni-demo-postgresql"
-    RABBITMQ_HOST: "bahmni-demo-rabbitmq"
-    HIU_ID: "sukreet-bahmni"
-    HIU_NAME: "sukreet-bahmni"
+    POSTGRES_HOST: "bahmni-performance-postgresql"
+    RABBITMQ_HOST: "bahmni-performance-rabbitmq"
   metadata:
     labels:
-      environment: demo
+      environment: performance
 hiu-db:
   enabled: true
   config:
-    JAVA_TOOL_OPTIONS: "-Djdbc.url=jdbc:postgresql://bahmni-demo-postgresql:5432/ -Djdbc.username=postgres -Djdbc.password=welcome -Djdbc.database=health_information_user"
+    JAVA_TOOL_OPTIONS: "-Djdbc.url=jdbc:postgresql://bahmni-performance-postgresql:5432/ -Djdbc.username=postgres -Djdbc.password=welcome -Djdbc.database=health_information_user"
   metadata:
     labels:
-      environment: demo
+      environment: performance
 hiu-ui:
   enabled: true
   config:
-    POSTGRES_HOST: bahmni-demo-postgresql
-    RABBITMQ_HOST: bahmni-demo-rabbitmq
+    POSTGRES_HOST: bahmni-performance-postgresql
+    RABBITMQ_HOST: bahmni-performance-rabbitmq
   metadata:
     labels:
-      environment: demo
+      environment: performance
 hip:
   enabled: true
   config:
-    CONNECTION_STRING: "Host=bahmni-demo-postgresql;Port=5432;Username=postgres;Password=welcome;Database=hipservice"
-    RABBITMQ_HOST: "bahmni-demo-rabbitmq"
-    BAHMNI_ID: "sukreet-bahmni"
+    CONNECTION_STRING: "Host=bahmni-performance-postgresql;Port=5432;Username=postgres;Password=welcome;Database=hipservice"
+    RABBITMQ_HOST: "bahmni-performance-rabbitmq"
   metadata:
     labels:
-      environment: demo
+      environment: performance
 otp-service:
   enabled: true
   config:
-      CONNECTION_STRING: "Host=bahmni-demo-postgresql;Port=5432;Username=postgres;Password=welcome;Database=otpservice;"
+    CONNECTION_STRING: "Host=bahmni-performance-postgresql;Port=5432;Username=postgres;Password=welcome;Database=otpservice;"
   metadata:
     labels:
-      environment: demo
+      environment: performance
 hip-atomfeed:
   enabled: true
   config:
-    DATABASE_URL: "jdbc:postgresql://bahmni-demo-postgresql:5432/"
+    DATABASE_URL: "jdbc:postgresql://bahmni-performance-postgresql:5432/"
   metadata:
     labels:
-      environment: demo
+      environment: performance
 
 postgresql:
   enabled: true
@@ -99,12 +96,12 @@ postgresql:
     enabled: true
   primary:
     persistence:
-      subPath: demo
+      subPath: performance
       storageClass: bahmni-efs-sc
       accessModes:
         - ReadWriteMany
     nodeSelector:
-      eks.amazonaws.com/nodegroup: nonprod
+      eks.amazonaws.com/nodegroup: performance
 
 rabbitmq:
   enabled: true
@@ -115,15 +112,14 @@ rabbitmq:
     accessModes:
       - ReadWriteMany
   nodeSelector:
-    eks.amazonaws.com/nodegroup: nonprod
+    eks.amazonaws.com/nodegroup: performance
 
 patient-documents:
   enabled: true
   metadata:
     labels:
-      environment: demo
+      environment: performance
   config:
     OPENMRS_HOST: "openmrs"
-
 appointments:
   enabled: true

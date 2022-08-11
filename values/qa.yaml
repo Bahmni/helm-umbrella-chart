@@ -1,5 +1,7 @@
 global:
   storageClass: bahmni-efs-sc
+  nodeSelector:
+    eks.amazonaws.com/nodegroup: nonprod
 
 metadata:
   labels:
@@ -44,6 +46,11 @@ reports:
     OPENMRS_HOST: "openmrs"
 hiu:
   enabled: true
+  config:
+    POSTGRES_HOST: "bahmni-qa-postgresql"
+    RABBITMQ_HOST: "bahmni-qa-rabbitmq"
+    HIU_ID: "Bahmni"
+    HIU_NAME: "Bahmni"
   metadata:
     labels:
       environment: qa
@@ -72,11 +79,15 @@ hip:
       environment: qa
 otp-service:
   enabled: true
+  config:
+    CONNECTION_STRING: "Host=bahmni-qa-postgresql;Port=5432;Username=postgres;Password=welcome;Database=otpservice;"
   metadata:
     labels:
       environment: qa
 hip-atomfeed:
   enabled: true
+  config:
+    DATABASE_URL: "jdbc:postgresql://bahmni-qa-postgresql:5432/"
   metadata:
     labels:
       environment: qa
@@ -91,6 +102,8 @@ postgresql:
       storageClass: bahmni-efs-sc
       accessModes:
         - ReadWriteMany
+    nodeSelector:
+      eks.amazonaws.com/nodegroup: nonprod
 
 rabbitmq:
   enabled: true
@@ -100,6 +113,8 @@ rabbitmq:
     storageClass: bahmni-efs-sc
     accessModes:
       - ReadWriteMany
+  nodeSelector:
+    eks.amazonaws.com/nodegroup: nonprod
 
 patient-documents:
   enabled: true

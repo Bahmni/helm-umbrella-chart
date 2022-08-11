@@ -1,0 +1,3 @@
+loki:
+  nodeSelector:
+    eks.amazonaws.com/nodegroup: nonprod

@@ -24,3 +24,23 @@ grafana:
       access: proxy
       url: http://loki:3100
       editable: true
+  nodeSelector:
+    eks.amazonaws.com/nodegroup: nonprod
+
+alertmanager:
+  alertmanagerSpec:
+    nodeSelector:
+      eks.amazonaws.com/nodegroup: nonprod
+
+prometheusOperator:
+  nodeSelector:
+    eks.amazonaws.com/nodegroup: nonprod
+  admissionWebhooks:
+    patch:
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: nonprod
+
+prometheus:
+  prometheusSpec:
+    nodeSelector:
+      eks.amazonaws.com/nodegroup: nonprod
