@@ -1,0 +1,7 @@
+nodeSelector:
+  eks.amazonaws.com/nodegroup: nonprod
+
+serviceMonitor:
+  enabled: true
+  labels:
+    release: monitoring

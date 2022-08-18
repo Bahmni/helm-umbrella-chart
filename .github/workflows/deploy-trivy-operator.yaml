@@ -1,0 +1,42 @@
+name: Deploy Trivy Operator
+
+on:
+  push:
+    branches:
+      - BAH-2136
+    paths:
+      - values/trivy-operator.yaml
+      - .github/workflows/deploy-trivy-operator.yaml
+
+  workflow_dispatch:
+
+jobs:
+  deploy-trivy-operator:
+    name: Deploy Trivy Operator
+    runs-on: ubuntu-latest
+    env:
+      CLUSTER_NAME: bahmni-cluster-nonprod
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Add helm repo
+        run: |
+          helm repo add aqua https://aquasecurity.github.io/helm-charts/
+          helm repo update
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.BAHMNI_AWS_ID }}
+          aws-secret-access-key: ${{ secrets.BAHMNI_AWS_SECRET }}
+          aws-region: ${{ secrets.BAHMNI_AWS_REGION }}
+          role-to-assume: ${{ secrets.BAHMNI_INFRA_ADMIN_ROLE }}
+          role-duration-seconds: 900 # 15 mins
+          role-session-name: BahmniInfraAdminSession
+      - name: Authorise Kubectl with EKS
+        run: aws eks update-kubeconfig --name $CLUSTER_NAME
+
+      - name: Helm Upgrade Trivy Operator
+        run: |
+          helm upgrade --install trivy-operator aqua/trivy-operator --namespace=trivy-operator --create-namespace \
+          --values=values/trivy-operator.yaml
+
