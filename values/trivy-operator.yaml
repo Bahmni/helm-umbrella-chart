@@ -5,3 +5,10 @@ serviceMonitor:
   enabled: true
   labels:
     release: monitoring
+operator:
+  vulnerabilityScannerReportTTL: "30m"
+  vulnerabilityScannerScanOnlyCurrentRevisions: true
+  configAuditScannerScanOnlyCurrentRevisions: true
+trivy:
+  resources: {}
+
