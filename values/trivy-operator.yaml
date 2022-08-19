@@ -6,7 +6,7 @@ serviceMonitor:
   labels:
     release: monitoring
 operator:
-  vulnerabilityScannerReportTTL: "2m"
+  vulnerabilityScannerReportTTL: "24h"
   scanJobsConcurrentLimit: 5
   vulnerabilityScannerScanOnlyCurrentRevisions: true
   configAuditScannerScanOnlyCurrentRevisions: true
