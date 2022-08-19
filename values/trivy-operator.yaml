@@ -6,9 +6,11 @@ serviceMonitor:
   labels:
     release: monitoring
 operator:
-  vulnerabilityScannerReportTTL: "30m"
+  vulnerabilityScannerReportTTL: "2m"
+  scanJobsConcurrentLimit: 5
   vulnerabilityScannerScanOnlyCurrentRevisions: true
   configAuditScannerScanOnlyCurrentRevisions: true
 trivy:
-  resources: {}
-
+  resources:
+    requests:
+    limits:

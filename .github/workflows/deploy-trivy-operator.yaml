@@ -38,5 +38,5 @@ jobs:
       - name: Helm Upgrade Trivy Operator
         run: |
           helm upgrade --install trivy-operator aqua/trivy-operator --namespace=trivy-operator --create-namespace \
-          --values=values/trivy-operator.yaml
+          --values=values/trivy-operator.yaml --version=0.1.6
 
