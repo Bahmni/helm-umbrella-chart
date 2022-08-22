@@ -31,5 +31,5 @@ jobs:
         run: aws eks update-kubeconfig --name $CLUSTER_NAME
 
       - name: Run Trivy Scan
-        run: trivy k8s --report=summary cluster
+        run: trivy k8s --report=summary --timeout=1h cluster
 
