@@ -63,10 +63,10 @@ jobs:
         run: mkdir reports
 
       - name: Run Trivy Detailed Scan
-        run: trivy k8s --no-progress --report=all --namespace ${{ matrix.namespaces }} --timeout=1h cluster -o reports/trivy-detailed-report.txt
+        run: trivy k8s --no-progress --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/trivy-detailed-report.txt
 
       - name: Run Trivy Summary Scan
-        run: trivy k8s --no-progress --report=summary --namespace ${{ matrix.namespaces }} --timeout=1h cluster -o reports/trivy-summary-report.txt
+        run: trivy k8s --no-progress --report=summary --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/trivy-summary-report.txt
 
       - name: Upload Report Artifact
         uses: actions/upload-artifact@v3
