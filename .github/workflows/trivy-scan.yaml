@@ -9,12 +9,41 @@ on:
 
   workflow_dispatch:
 
+env:
+  CLUSTER_NAME: bahmni-cluster-nonprod
+
 jobs:
+  get-namespaces:
+    name: Get Namespaces
+    runs-on: ubuntu-latest
+    outputs:
+      namespaces: ${{ steps.get-namespaces.outputs.namespaces }}
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.BAHMNI_AWS_ID }}
+          aws-secret-access-key: ${{ secrets.BAHMNI_AWS_SECRET }}
+          aws-region: ${{ secrets.BAHMNI_AWS_REGION }}
+          role-to-assume: ${{ secrets.BAHMNI_INFRA_ADMIN_ROLE }}
+          role-duration-seconds: 900 # 15 mins
+          role-session-name: BahmniInfraAdminSession
+      - name: Authorise Kubectl with EKS
+        run: aws eks update-kubeconfig --name $CLUSTER_NAME
+      - name: Get namespaces list
+        id: get-namespaces
+        run: |
+          NAMESPACES=$(kubectl get ns -o json | jq -c ".items[] | .metadata.name" | jq -s .)
+          echo $NAMESPACES
+          echo ::set-output name=namespaces::${NAMESPACES}
+
   trivy-scan:
     name: Trivy Scan
     runs-on: ubuntu-latest
-    env:
-      CLUSTER_NAME: bahmni-cluster-nonprod
+    needs: [get-namespaces]
+    strategy:
+      matrix:
+        namespaces: ${{ fromJson(needs.get-namespaces.outputs.namespaces) }}
     steps:
       - name: Setup Trivy
         run: brew install aquasecurity/trivy/trivy
@@ -34,14 +63,14 @@ jobs:
         run: mkdir reports
 
       - name: Run Trivy Detailed Scan
-        run: trivy k8s --no-progress --report=all --timeout=1h cluster -o reports/trivy-detailed-report.txt
+        run: trivy k8s --no-progress --report=all --namespace ${{ matrix.namespaces }} --timeout=1h cluster -o reports/trivy-detailed-report.txt
 
       - name: Run Trivy Summary Scan
-        run: trivy k8s --no-progress --report=summary --timeout=1h cluster -o reports/trivy-summary-report.txt
+        run: trivy k8s --no-progress --report=summary --namespace ${{ matrix.namespaces }} --timeout=1h cluster -o reports/trivy-summary-report.txt
 
       - name: Upload Report Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: trivy-reports
+          name: trivy-reports-${{ matrix.namespaces }}
           path: reports/
 
