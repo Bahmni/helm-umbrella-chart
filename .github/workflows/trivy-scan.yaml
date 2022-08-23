@@ -62,11 +62,19 @@ jobs:
       - name: Create reports directory
         run: mkdir reports
 
-      - name: Run Trivy Detailed Scan
-        run: trivy k8s --no-progress --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/trivy-detailed-report.txt
+      - name: Run Trivy Detailed Scan for Critical Vulnerabilities
+        run: trivy k8s --no-progress --severity CRITICAL --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/critical-vulnerabilities.txt
+      - name: Run Trivy Detailed Scan for High Vulnerabilities
+        run: trivy k8s --no-progress --severity HIGH --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/high-vulnerabilities.txt
+      - name: Run Trivy Detailed Scan for Medium Vulnerabilities
+        run: trivy k8s --no-progress --severity MEDIUM --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/medium-vulnerabilities.txt
+      - name: Run Trivy Detailed Scan for Low Vulnerabilities
+        run: trivy k8s --no-progress --severity LOW --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/low-vulnerabilities.txt
+      - name: Run Trivy Detailed Scan for Unknown Vulnerabilities
+        run: trivy k8s --no-progress --severity UNKNOWN --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/unknown-vulnerabilities.txt
 
       - name: Run Trivy Summary Scan
-        run: trivy k8s --no-progress --report=summary --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/trivy-summary-report.txt
+        run: trivy k8s --no-progress --report=summary --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/trivy-summary.txt
 
       - name: Upload Report Artifact
         uses: actions/upload-artifact@v3
