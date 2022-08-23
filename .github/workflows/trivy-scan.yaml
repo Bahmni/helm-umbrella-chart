@@ -30,6 +30,18 @@ jobs:
       - name: Authorise Kubectl with EKS
         run: aws eks update-kubeconfig --name $CLUSTER_NAME
 
-      - name: Run Trivy Scan
-        run: trivy k8s --report=all --timeout=1h cluster
+      - name: Create reports directory
+        run: mkdir reports
+
+      - name: Run Trivy Detailed Scan
+        run: trivy k8s --no-progress --report=all --timeout=1h cluster -o reports/trivy-detailed-report.txt
+
+      - name: Run Trivy Summary Scan
+        run: trivy k8s --no-progress --report=summary --timeout=1h cluster -o reports/trivy-summary-report.txt
+
+      - name: Upload Report Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: trivy-reports
+          path: reports/
 
