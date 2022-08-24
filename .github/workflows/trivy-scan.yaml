@@ -99,6 +99,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           path: trivy-reports/${{ steps.getEpoch.outputs.epoch }}
+      - name: Create Index File
+        run: cd trivy-reports && tree -H . -o index.html
       - name: Publish Report
         run: |
           git config user.name 'github-actions[bot]'
