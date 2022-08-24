@@ -90,8 +90,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: gh-pages
-      - name: Clean old reports
-        run: rm -rf trivy-reports
       - name: Download Reports
         uses: actions/download-artifact@v3
         with:
