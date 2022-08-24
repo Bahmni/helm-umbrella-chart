@@ -86,19 +86,16 @@ jobs:
     runs-on: ubuntu-latest
     needs: [trivy-scan]
     steps:
-      - id: getEpoch
-        name: Run Epoch
-        run: |
-          export EPOCH=$(date +%s)
-          echo "::set-output name=epoch::${EPOCH}"
       - name: Checkout reports branch
         uses: actions/checkout@v2
         with:
           ref: gh-pages
+      - name: Clean old reports
+        run: rm -rf trivy-reports
       - name: Download Reports
         uses: actions/download-artifact@v3
         with:
-          path: trivy-reports/${{ steps.getEpoch.outputs.epoch }}
+          path: trivy-reports/
       - name: Create Index File
         run: cd trivy-reports && tree -H . -o index.html
       - name: Publish Report
