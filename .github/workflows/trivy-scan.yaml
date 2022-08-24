@@ -96,14 +96,12 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           path: trivy-reports/
-      - name: Create Index File
-        run: cd trivy-reports && tree -H . -o index.html
       - name: Publish Report
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add .
-          git commit -m "Publishing trivy-report ${{ steps.getEpoch.outputs.epoch }}"
+          git commit -m "Updating trivy-report"
           git push
 
 
