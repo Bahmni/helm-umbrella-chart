@@ -114,6 +114,7 @@ jobs:
 
   upload-report:
     runs-on: ubuntu-latest
+    name: Upload Report
     needs: [ trivy-namespace-scan, trivy-cluster-summary-scan ]
     steps:
       - name: Checkout reports branch
@@ -124,6 +125,9 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           path: trivy-reports/
+      - name: Update report timestamp
+        run: |
+          sed -i.bak "s|Report Generated at:.*</p>|Report Generated at: $(date) </p>|" trivy-reports/index.html && rm trivy-reports/index.html.bak
       - name: Publish Report
         run: |
           git config user.name 'github-actions[bot]'
