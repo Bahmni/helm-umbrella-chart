@@ -6,7 +6,9 @@ on:
       - BAH-2136
     paths:
       - .github/workflows/trivy-scan.yaml
-
+  schedule:
+    # Runs "At 06:00 AM on every day-of-week. Below time is mentioned in UTC time zone" (see https://crontab.guru)
+    - cron: '30 0 * * *'
   workflow_dispatch:
 
 env:
@@ -127,7 +129,7 @@ jobs:
           path: trivy-reports/
       - name: Update report timestamp
         run: |
-          sed -i.bak "s|Report Generated at:.*</p>|Report Generated at: $(date) </p>|" trivy-reports/index.html && rm trivy-reports/index.html.bak
+          sed -i.bak "s|Report Generated at:.*</p>|Report Generated at: $(TZ=Asia/Kolkata date) </p>|" trivy-reports/index.html && rm trivy-reports/index.html.bak
       - name: Publish Report
         run: |
           git config user.name 'github-actions[bot]'
