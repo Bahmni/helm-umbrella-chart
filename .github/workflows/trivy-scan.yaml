@@ -13,6 +13,36 @@ env:
   CLUSTER_NAME: bahmni-cluster-nonprod
 
 jobs:
+  trivy-cluster-summary-scan:
+    name: Trivy Cluster Summary Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Trivy
+        run: brew install aquasecurity/trivy/trivy
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.BAHMNI_AWS_ID }}
+          aws-secret-access-key: ${{ secrets.BAHMNI_AWS_SECRET }}
+          aws-region: ${{ secrets.BAHMNI_AWS_REGION }}
+          role-to-assume: ${{ secrets.BAHMNI_INFRA_ADMIN_ROLE }}
+          role-duration-seconds: 900 # 15 mins
+          role-session-name: BahmniInfraAdminSession
+      - name: Authorise Kubectl with EKS
+        run: aws eks update-kubeconfig --name $CLUSTER_NAME
+
+      - name: Create reports directory
+        run: mkdir reports
+
+      - name: Run Trivy Detailed Scan for Critical Vulnerabilities
+        run: trivy k8s --no-progress --report=summary --timeout=1h cluster -o reports/cluster-summary.txt
+
+      - name: Upload Report Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: cluster-summary
+          path: reports/
+
   get-namespaces:
     name: Get Namespaces
     runs-on: ubuntu-latest
@@ -37,10 +67,10 @@ jobs:
           echo $NAMESPACES
           echo ::set-output name=namespaces::${NAMESPACES}
 
-  trivy-scan:
-    name: Trivy Scan
+  trivy-namespace-scan:
+    name: Trivy Namespace Scan
     runs-on: ubuntu-latest
-    needs: [get-namespaces]
+    needs: [ get-namespaces ]
     strategy:
       matrix:
         namespaces: ${{ fromJson(needs.get-namespaces.outputs.namespaces) }}
@@ -84,7 +114,7 @@ jobs:
 
   upload-report:
     runs-on: ubuntu-latest
-    needs: [trivy-scan]
+    needs: [ trivy-namespace-scan, trivy-cluster-summary-scan ]
     steps:
       - name: Checkout reports branch
         uses: actions/checkout@v2
