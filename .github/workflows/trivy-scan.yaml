@@ -77,6 +77,8 @@ jobs:
       matrix:
         namespaces: ${{ fromJson(needs.get-namespaces.outputs.namespaces) }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
       - name: Setup Trivy
         run: brew install aquasecurity/trivy/trivy
       - name: Configure AWS Credentials
@@ -104,7 +106,9 @@ jobs:
         run: trivy k8s --no-progress --severity LOW --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/low-vulnerabilities.txt
       - name: Run Trivy Detailed Scan for Unknown Vulnerabilities
         run: trivy k8s --no-progress --severity UNKNOWN --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/unknown-vulnerabilities.txt
-
+      - name: Checking for Empty Vulnerability Reports
+        shell: bash
+        run: bash .github/check_empty_reports.sh
       - name: Run Trivy Summary Scan
         run: trivy k8s --no-progress --report=summary --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/trivy-summary.txt
 
