@@ -3,7 +3,7 @@ name: Trivy Security Scan
 on:
   push:
     branches:
-      - BAH-2136
+      - main
     paths:
       - .github/workflows/trivy-scan.yaml
   schedule:
@@ -36,7 +36,7 @@ jobs:
       - name: Create reports directory
         run: mkdir reports
 
-      - name: Run Trivy Detailed Scan for Critical Vulnerabilities
+      - name: Run Trivy Summary Scan
         run: trivy k8s --no-progress --report=summary --timeout=1h cluster -o reports/cluster-summary.txt
 
       - name: Upload Report Artifact
