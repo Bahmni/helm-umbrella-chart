@@ -141,5 +141,11 @@ jobs:
           git add .
           git commit -m "Updating trivy-report"
           git push
-
-
+  notification:
+    name: Slack notification
+    needs: [upload-report]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post message
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"🔎 Trivy Security Scan completed for ${{ env.CLUSTER_NAME }}. \n> <https://bahmniindiadistro.github.io/${{github.event.repository.name}}/trivy-reports/|View Report>"}' ${{ secrets.SLACK_WEBHOOK_URL }}
