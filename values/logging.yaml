@@ -2,7 +2,7 @@ loki:
   enabled: true
   persistence:
     enabled: true
-    size: 1 Gi
+    size: 1Gi
   nodeSelector:
     eks.amazonaws.com/nodegroup: nonprod
 grafana:
