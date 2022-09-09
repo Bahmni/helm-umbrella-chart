@@ -2,9 +2,41 @@ loki:
   enabled: true
   persistence:
     enabled: true
-    size: 1Gi
+    size: 10Gi
   nodeSelector:
     eks.amazonaws.com/nodegroup: nonprod
+  chunk_store_config:
+    max_look_back_period: 360h
+  ingester:
+    chunk_block_size: 262144
+    chunk_idle_period: 3m
+    chunk_retain_period: 1m
+    lifecycler:
+      ring:
+        kvstore:
+          store: inmemory
+        replication_factor: 1
+  limits_config:
+    retention_period: 360h
+  schema_config:
+    configs:
+      -   from: "2022-09-09"
+          index:
+            period: 24h
+            prefix: loki_index_
+          object_store: filesystem
+          schema: v11
+          store: boltdb
+  server:
+    http_listen_port: 3100
+  storage_config:
+    boltdb:
+      directory: /data/loki/index
+    filesystem:
+      directory: /data/loki/chunks
+  table_manager:
+    retention_deletes_enabled: true
+    retention_period: 120h
 grafana:
   sidecar:
     datasources:
