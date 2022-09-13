@@ -119,9 +119,13 @@ jobs:
           --set hip.secrets.GATEWAY_CLIENT_SECRET=$GATEWAY_CLIENT_SECRET \
           --set hip.secrets.OPENMRS_PASSWORD=Admin123 \
           --set hip.config.BAHMNI_URL=https://${{env.ENVIRONMENT_DNS}}/openmrs \
+          --set hip.config.RABBITMQ_USERNAME=$MQ_USERNAME \
+          --set hip.config.RABBITMQ_PASSWORD=$MQ_PASSWORD \
           --set hiu.secrets.HIU_CLIENT_ID=$GATEWAY_CLIENT_ID \
           --set hiu.secrets.HIU_CLIENT_SECRET=$GATEWAY_CLIENT_SECRET \
           --set hiu.config.DATA_PUSH_URL=https://${{env.ENVIRONMENT_DNS}}/hiu-api/data/notification \
+          --set hiu.config.RABBITMQ_USERNAME=$MQ_USERNAME \
+          --set hiu.config.RABBITMQ_PASSWORD=$MQ_PASSWORD \
           --set hiu-ui.config.BACKEND_BASE_URL=https://${{env.ENVIRONMENT_DNS}} \
           --set global.postgresql.auth.postgresPassword=$PSQL_PASSWORD \
           --set rabbitmq.auth.username=$MQ_USERNAME \
