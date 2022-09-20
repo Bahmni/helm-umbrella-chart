@@ -20,7 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Trivy
-        run: brew install aquasecurity/trivy/trivy@0.31.3
+        run: |
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.31.3/trivy_0.31.3_Linux-64bit.deb
+          sudo dpkg -i trivy_0.31.3_Linux-64bit.deb
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -37,7 +39,7 @@ jobs:
         run: mkdir reports
 
       - name: Run Trivy Summary Scan
-        run: trivy k8s --no-progress --report=summary --timeout=1h --security-checks=vuln,config,secret,rbac cluster -o reports/cluster-summary.txt
+        run: trivy k8s --no-progress --report=summary --timeout=1h cluster -o reports/cluster-summary.txt
 
       - name: Upload Report Artifact
         uses: actions/upload-artifact@v3
@@ -80,7 +82,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Setup Trivy
-        run: brew install aquasecurity/trivy/trivy@0.31.3
+        run: |
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.31.3/trivy_0.31.3_Linux-64bit.deb
+          sudo dpkg -i trivy_0.31.3_Linux-64bit.deb
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -97,20 +101,20 @@ jobs:
         run: mkdir reports
 
       - name: Run Trivy Detailed Scan for Critical Vulnerabilities
-        run: trivy k8s --no-progress --security-checks=vuln,config,secret,rbac --severity CRITICAL --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/critical-vulnerabilities.txt
+        run: trivy k8s --no-progress --severity CRITICAL --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/critical-vulnerabilities.txt
       - name: Run Trivy Detailed Scan for High Vulnerabilities
-        run: trivy k8s --no-progress --security-checks=vuln,config,secret,rbac --severity HIGH --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/high-vulnerabilities.txt
+        run: trivy k8s --no-progress --severity HIGH --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/high-vulnerabilities.txt
       - name: Run Trivy Detailed Scan for Medium Vulnerabilities
-        run: trivy k8s --no-progress --security-checks=vuln,config,secret,rbac --severity MEDIUM --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/medium-vulnerabilities.txt
+        run: trivy k8s --no-progress --severity MEDIUM --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/medium-vulnerabilities.txt
       - name: Run Trivy Detailed Scan for Low Vulnerabilities
-        run: trivy k8s --no-progress --security-checks=vuln,config,secret,rbac --severity LOW --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/low-vulnerabilities.txt
+        run: trivy k8s --no-progress --severity LOW --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/low-vulnerabilities.txt
       - name: Run Trivy Detailed Scan for Unknown Vulnerabilities
-        run: trivy k8s --no-progress --security-checks=vuln,config,secret,rbac --severity UNKNOWN --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/unknown-vulnerabilities.txt
+        run: trivy k8s --no-progress --severity UNKNOWN --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/unknown-vulnerabilities.txt
       - name: Checking for Empty Vulnerability Reports
         shell: bash
         run: bash .github/check_empty_reports.sh
       - name: Run Trivy Summary Scan
-        run: trivy k8s --no-progress --security-checks=vuln,config,secret,rbac --report=summary --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/trivy-summary.txt
+        run: trivy k8s --no-progress --report=summary --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/trivy-summary.txt
 
       - name: Upload Report Artifact
         uses: actions/upload-artifact@v3
