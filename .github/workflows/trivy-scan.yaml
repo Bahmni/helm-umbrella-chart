@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Trivy
-        run: brew install aquasecurity/trivy/trivy
+        run: brew install aquasecurity/trivy/trivy@0.31.3
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -80,7 +80,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Setup Trivy
-        run: brew install aquasecurity/trivy/trivy
+        run: brew install aquasecurity/trivy/trivy@0.31.3
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
