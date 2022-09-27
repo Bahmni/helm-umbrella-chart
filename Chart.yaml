@@ -25,9 +25,9 @@ dependencies:
     version: ~1.0.0-0
     condition: crater.enabled
 
-  - repository: https://bahmniindiadistro.github.io/helm-charts
+  - repository: https://bahmni.github.io/helm-charts
     name: reports
-    version: ~1.0.0-0
+    version: 1.0.0-48
     condition: reports.enabled
 
   - repository: https://bahmniindiadistro.github.io/helm-charts
