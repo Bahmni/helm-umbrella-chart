@@ -93,3 +93,6 @@ patient-documents:
 
 appointments:
   enabled: true
+
+ndhm-react:
+  enabled: false

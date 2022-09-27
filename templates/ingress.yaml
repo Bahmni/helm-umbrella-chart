@@ -82,6 +82,16 @@ spec:
                   number: 80
           {{- end }}
 
+          {{- if index .Values "ndhm-react" "enabled" }}
+          - path: /ndhm
+            pathType: Prefix
+            backend:
+              service:
+                name: ndhm-react
+                port:
+                  number: 80
+         {{- end }}
+
     - host: payments-{{ .Values.ingress.host }}
       http:
         paths:

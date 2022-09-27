@@ -126,3 +126,9 @@ patient-documents:
     OPENMRS_HOST: "openmrs"
 appointments:
   enabled: true
+
+ndhm-react:
+  enabled: true
+  metadata:
+    labels:
+      environment: performance
