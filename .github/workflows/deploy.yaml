@@ -29,6 +29,7 @@ env:
 jobs:
   deploy:
     name: Deploy to ${{ github.event.inputs.environment || 'dev'}} environment
+    concurrency: ${{ github.event.inputs.environment || 'dev'}}
     environment:
       name: ${{ github.event.inputs.environment || 'dev'}}
       url: ${{ (github.event.inputs.environment || 'dev') == 'demo' && 'lite.mybahmni.in' || format('{0}.{1}', github.event.inputs.environment || 'dev', 'lite.mybahmni.in') }}
@@ -80,6 +81,9 @@ jobs:
           --set databases.crater.DB_NAME=crater_${{ env.ENVIRONMENT }} \
           --set databases.crater.USERNAME=$CRATER_DB_USERNAME \
           --set databases.crater.PASSWORD=$CRATER_DB_PASSWORD \
+          --set databases.crater_atomfeed.DB_NAME=crater_atomfeed \
+          --set databases.crater_atomfeed.USERNAME=beehyv \
+          --set databases.crater_atomfeed.PASSWORD=beehyv123 \
           --set databases.reports.DB_NAME=bahmni_reports_${{ env.ENVIRONMENT }} \
           --set databases.reports.USERNAME=$REPORTS_DB_USERNAME \
           --set databases.reports.PASSWORD=$REPORTS_DB_PASSWORD
@@ -119,21 +123,22 @@ jobs:
           --set rabbitmq.auth.password=$MQ_PASSWORD \
           --set ingress.host=${{env.ENVIRONMENT_DNS}} \
           --set efs.fileSystemId=${{env.EFS_FILESYSTEM_ID}} \
+          --set crater_atomfeed.config.CRATER_ATOMFEED_DB_HOST=$RDS_HOST
           --values=values/${{ env.ENVIRONMENT }}.yaml \
           --install \
           --namespace ${{ env.ENVIRONMENT }} --create-namespace
-  notification:
-    name: Slack notification
-    needs:
-      - deploy
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Success
-        if: ${{ needs.deploy.result == 'success' }}
-        run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text":">🟢 Bahmni India Distro deployed. \n>*Bahmni* https://${{env.ENVIRONMENT_DNS}} \n>*Payments* https://payments-${{env.ENVIRONMENT_DNS}} \n> <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Umbrella Chart Job #${{github.run_id}}>"}' ${{ secrets.SLACK_WEBHOOK_URL }}
-      - name: Failure
-        if: ${{ needs.deploy.result == 'failure' }}
-        run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"🔴 Bahmni India Distro deployment failed!!! This is where you go look what happened → <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Umbrella Chart Job #${{github.run_id}}>"}' ${{ secrets.SLACK_WEBHOOK_URL }}
+  # notification:
+  #   name: Slack notification
+  #   needs:
+  #     - deploy
+  #   runs-on: ubuntu-latest
+  #   if: always()
+  #   steps:
+  #     - name: Success
+  #       if: ${{ needs.deploy.result == 'success' }}
+  #       run: |
+  #         curl -X POST -H 'Content-type: application/json' --data '{"text":">🟢 Bahmni India Distro deployed. \n>*Bahmni* https://${{env.ENVIRONMENT_DNS}} \n>*Payments* https://payments-${{env.ENVIRONMENT_DNS}} \n> <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Umbrella Chart Job #${{github.run_id}}>"}' ${{ secrets.SLACK_WEBHOOK_URL }}
+  #     - name: Failure
+  #       if: ${{ needs.deploy.result == 'failure' }}
+  #       run: |
+  #         curl -X POST -H 'Content-type: application/json' --data '{"text":"🔴 Bahmni India Distro deployment failed!!! This is where you go look what happened → <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Umbrella Chart Job #${{github.run_id}}>"}' ${{ secrets.SLACK_WEBHOOK_URL }}

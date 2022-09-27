@@ -69,3 +69,8 @@ dependencies:
     name: patient-documents
     version: ~1.0.0-0
     condition: patient-documents.enabled
+  
+  - repository: https://bahmni.github.io/helm-charts
+    name: crater-atomfeed
+    version: ~1.0.0-0
+    condition: crater-atomfeed.enabled
