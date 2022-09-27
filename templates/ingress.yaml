@@ -4,6 +4,8 @@ metadata:
   name: bahmni-ingress
   labels:
     environment: {{ .Values.metadata.labels.environment }}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: {{ .Values.metadata.ingress.PROXY_BODY_SIZE }}
 spec:
   ingressClassName: nginx
   rules:
@@ -70,6 +72,16 @@ spec:
                   number: 8099
           {{- end }}
 
+          {{- if index .Values "appointments" "enabled" }}
+          - path: /appointments
+            pathType: Prefix
+            backend:
+              service:
+                name: appointments
+                port:
+                  number: 80
+          {{- end }}
+
     - host: payments-{{ .Values.ingress.host }}
       http:
         paths:
@@ -93,18 +105,19 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/configuration-snippet: |
       add_header Set-Cookie "reporting_session=$cookie_JSESSIONID;Path=/;Max-Age=86400";
+    nginx.ingress.kubernetes.io/proxy-body-size: {{ .Values.metadata.ingress.PROXY_BODY_SIZE }}
 spec:
   ingressClassName: nginx
   rules:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          {{- if index .Values "bahmni-openmrs" "enabled" }}
+          {{- if index .Values "openmrs" "enabled" }}
           - path: /openmrs
             pathType: Prefix
             backend:
               service:
-                name: bahmni-openmrs
+                name: openmrs
                 port:
                   number: 8080
           {{- end }}

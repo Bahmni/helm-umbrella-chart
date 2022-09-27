@@ -1,15 +1,17 @@
 global:
   postgresql:
-    auth: 
+    auth:
       postgresPassword: welcome
 
 metadata:
   labels:
     environment: local
+  ingress:
+    PROXY_BODY_SIZE: "7m"
 ingress:
   host: bahmni.k8s
 
-bahmni-openmrs:
+openmrs:
   enabled: true
   secrets:
     DB_USERNAME: openmrs-user
@@ -23,10 +25,27 @@ bahmni-lab:
   enabled: false
 crater:
   enabled: true
+  config:
+    APP_URL: http://payments-bahmni.local
+    DB_DATABASE: crater
+    DB_HOST: mysql
+    DB_PORT: 3306
+    SANCTUM_STATEFUL_DOMAINS: payments-bahmni.local
+    SESSION_DOMAIN: payments-bahmni.local
+    AUTO_INSTALL: "true"
+    ADMIN_NAME: Super Man
+    COMPANY_NAME: Bahmni
+    COMPANY_SLUG: bahmni
+    COUNTRY_ID: 101
+  secrets:
+    DB_USERNAME: "crater-user"
+    DB_PASSWORD: "password"
+    ADMIN_EMAIL: "superman@bahmni.org"
+    ADMIN_PASSWORD: "crater123"
 reports:
   enabled: false
   config:
-    OPENMRS_HOST: "bahmni-openmrs"
+    OPENMRS_HOST: "openmrs"
     OPENMRS_DB_NAME: openmrs
     REPORTS_DB_NAME: reports
   secrets:
@@ -36,10 +55,6 @@ reports:
     REPORTS_DB_SERVER: mysql
     REPORTS_DB_USERNAME: reports-user
     REPORTS_DB_PASSWORD: password
-  image:
-    repository: bahmniindiadistro
-    name: reports
-    tag: 1.0.0-1
 hiu:
   enabled: false
   config:
@@ -62,6 +77,8 @@ postgresql:
   enabled: false
 rabbit-mq:
   enabled: false
+hip-atomfeed:
+  enabled: false
 
 rabbitmq:
   auth:
@@ -72,4 +89,7 @@ rabbitmq:
 patient-documents:
   enabled: true
   config:
-    OPENMRS_HOST: "bahmni-openmrs"
+    OPENMRS_HOST: "openmrs"
+
+appointments:
+  enabled: true

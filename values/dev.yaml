@@ -1,11 +1,15 @@
 global:
   storageClass: bahmni-efs-sc
+  nodeSelector:
+    eks.amazonaws.com/nodegroup: nonprod
 
 metadata:
   labels:
     environment: dev
+  ingress:
+    PROXY_BODY_SIZE: "7m"
 
-bahmni-openmrs:
+openmrs:
   enabled: true
 bahmni-web:
   enabled: true
@@ -13,16 +17,26 @@ bahmni-lab:
   enabled: true
 crater:
   enabled: true
+  config:
+    AUTO_INSTALL: "true"
+    ADMIN_NAME: Super Man
+    COMPANY_NAME: Bahmni
+    COMPANY_SLUG: bahmni
+    COUNTRY_ID: 101
+  secrets:
+    ADMIN_EMAIL: "superman@bahmni.org"
 reports:
   enabled: true
   config:
-    OPENMRS_HOST: "bahmni-openmrs"
-  image:
-    repository: bahmniindiadistro
-    name: reports
-    tag: 1.0.0-1
+    OPENMRS_HOST: "openmrs"
 hiu:
   enabled: true
+  config:
+    POSTGRES_HOST: "bahmni-dev-postgresql"
+    RABBITMQ_HOST: "bahmni-dev-rabbitmq"
+    HIU_ID: "Bahmni"
+    HIU_NAME: "Bahmni"
+
 hiu-db:
   enabled: true
   config:
@@ -37,7 +51,10 @@ hip:
   config:
     CONNECTION_STRING: "Host=bahmni-dev-postgresql;Port=5432;Username=postgres;Password=welcome;Database=hipservice"
     RABBITMQ_HOST: "bahmni-dev-rabbitmq"
+    BAHMNI_ID: "Bahmni"
 otp-service:
+  enabled: true
+hip-atomfeed:
   enabled: true
 
 postgresql:
@@ -46,9 +63,12 @@ postgresql:
     enabled: true
   primary:
     persistence:
+      subPath: dev
       storageClass: bahmni-efs-sc
       accessModes:
         - ReadWriteMany
+    nodeSelector:
+      eks.amazonaws.com/nodegroup: nonprod
 
 rabbitmq:
   enabled: true
@@ -58,6 +78,8 @@ rabbitmq:
     storageClass: bahmni-efs-sc
     accessModes:
       - ReadWriteMany
+  nodeSelector:
+    eks.amazonaws.com/nodegroup: nonprod
 
 patient-documents:
   enabled: true
@@ -65,4 +87,6 @@ patient-documents:
     OPENMRS_HOST: "openmrs"
 
 crater_atomfeed:
+  enabled: true
+appointments:
   enabled: true

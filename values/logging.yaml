@@ -1,0 +1,11 @@
+loki:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 1Gi
+  nodeSelector:
+    eks.amazonaws.com/nodegroup: nonprod
+grafana:
+  sidecar:
+    datasources:
+      enabled: false

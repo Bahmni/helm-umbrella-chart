@@ -1,8 +1,15 @@
+global:
+  storageClass: bahmni-efs-sc
+  nodeSelector:
+    eks.amazonaws.com/nodegroup: nonprod
+
 metadata:
   labels:
     environment: qa
+  ingress:
+    PROXY_BODY_SIZE: "7m"
 
-bahmni-openmrs:
+openmrs:
   enabled: true
   metadata:
     labels:
@@ -22,19 +29,28 @@ crater:
   metadata:
     labels:
       environment: qa
+  config:
+    AUTO_INSTALL: "true"
+    ADMIN_NAME: Super Man
+    COMPANY_NAME: Bahmni
+    COMPANY_SLUG: bahmni
+    COUNTRY_ID: 101
+  secrets:
+    ADMIN_EMAIL: "superman@bahmni.org"
 reports:
   enabled: true
   metadata:
     labels:
       environment: qa
   config:
-    OPENMRS_HOST: "bahmni-openmrs"
-  image:
-    repository: bahmniindiadistro
-    name: reports
-    tag: 1.0.0-1
+    OPENMRS_HOST: "openmrs"
 hiu:
   enabled: true
+  config:
+    POSTGRES_HOST: "bahmni-qa-postgresql"
+    RABBITMQ_HOST: "bahmni-qa-rabbitmq"
+    HIU_ID: "Bahmni-QA"
+    HIU_NAME: "Bahmni-QA"
   metadata:
     labels:
       environment: qa
@@ -58,22 +74,48 @@ hip:
   config:
     CONNECTION_STRING: "Host=bahmni-qa-postgresql;Port=5432;Username=postgres;Password=welcome;Database=hipservice"
     RABBITMQ_HOST: "bahmni-qa-rabbitmq"
+    BAHMNI_ID: "Bahmni-QA"
   metadata:
     labels:
       environment: qa
 otp-service:
   enabled: true
+  config:
+    CONNECTION_STRING: "Host=bahmni-qa-postgresql;Port=5432;Username=postgres;Password=welcome;Database=otpservice;"
   metadata:
     labels:
       environment: qa
+hip-atomfeed:
+  enabled: true
+  config:
+    DATABASE_URL: "jdbc:postgresql://bahmni-qa-postgresql:5432/"
+  metadata:
+    labels:
+      environment: qa
+
 postgresql:
   enabled: true
-rabbit-mq:
-  enabled: true
+  volumePermissions:
+    enabled: true
+  primary:
+    persistence:
+      subPath: qa
+      storageClass: bahmni-efs-sc
+      accessModes:
+        - ReadWriteMany
+    nodeSelector:
+      eks.amazonaws.com/nodegroup: nonprod
 
 rabbitmq:
+  enabled: true
   auth:
     erlangCookie: bahmni
+  persistence:
+    storageClass: bahmni-efs-sc
+    accessModes:
+      - ReadWriteMany
+  nodeSelector:
+    eks.amazonaws.com/nodegroup: nonprod
 
 patient-documents:
   enabled: true
@@ -81,4 +123,7 @@ patient-documents:
     labels:
       environment: qa
   config:
-    OPENMRS_HOST: "bahmni-openmrs"
+    OPENMRS_HOST: "openmrs"
+
+appointments:
+  enabled: true

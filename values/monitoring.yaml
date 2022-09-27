@@ -15,7 +15,7 @@ grafana:
       auth_url: https://github.com/login/oauth/authorize
       token_url: https://github.com/login/oauth/access_token
       api_url: https://api.github.com/user
-      allowed_organizations: Bahmni BahmniIndiaDistro
+      allowed_organizations: Bahmni BahmniIndiaDistro IPLit
     users:
       viewers_can_edit: true
   additionalDataSources:
@@ -24,3 +24,25 @@ grafana:
       access: proxy
       url: http://loki:3100
       editable: true
+      isDefault: false
+
+  nodeSelector:
+    eks.amazonaws.com/nodegroup: nonprod
+
+alertmanager:
+  alertmanagerSpec:
+    nodeSelector:
+      eks.amazonaws.com/nodegroup: nonprod
+
+prometheusOperator:
+  nodeSelector:
+    eks.amazonaws.com/nodegroup: nonprod
+  admissionWebhooks:
+    patch:
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: nonprod
+
+prometheus:
+  prometheusSpec:
+    nodeSelector:
+      eks.amazonaws.com/nodegroup: nonprod

@@ -1,0 +1,155 @@
+name: Trivy Security Scan
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/trivy-scan.yaml
+  schedule:
+    # Runs "At 06:00 AM on every day-of-week. Below time is mentioned in UTC time zone" (see https://crontab.guru)
+    - cron: '30 0 * * *'
+  workflow_dispatch:
+
+env:
+  CLUSTER_NAME: bahmni-cluster-nonprod
+
+jobs:
+  trivy-cluster-summary-scan:
+    name: Trivy Cluster Summary Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Trivy
+        run: |
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.31.3/trivy_0.31.3_Linux-64bit.deb
+          sudo dpkg -i trivy_0.31.3_Linux-64bit.deb
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.BAHMNI_AWS_ID }}
+          aws-secret-access-key: ${{ secrets.BAHMNI_AWS_SECRET }}
+          aws-region: ${{ secrets.BAHMNI_AWS_REGION }}
+          role-to-assume: ${{ secrets.BAHMNI_INFRA_ADMIN_ROLE }}
+          role-duration-seconds: 900 # 15 mins
+          role-session-name: BahmniInfraAdminSession
+      - name: Authorise Kubectl with EKS
+        run: aws eks update-kubeconfig --name $CLUSTER_NAME
+
+      - name: Create reports directory
+        run: mkdir reports
+
+      - name: Run Trivy Summary Scan
+        run: trivy k8s --no-progress --report=summary --timeout=1h cluster -o reports/cluster-summary.txt
+
+      - name: Upload Report Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: cluster-summary
+          path: reports/
+
+  get-namespaces:
+    name: Get Namespaces
+    runs-on: ubuntu-latest
+    outputs:
+      namespaces: ${{ steps.get-namespaces.outputs.namespaces }}
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.BAHMNI_AWS_ID }}
+          aws-secret-access-key: ${{ secrets.BAHMNI_AWS_SECRET }}
+          aws-region: ${{ secrets.BAHMNI_AWS_REGION }}
+          role-to-assume: ${{ secrets.BAHMNI_INFRA_ADMIN_ROLE }}
+          role-duration-seconds: 900 # 15 mins
+          role-session-name: BahmniInfraAdminSession
+      - name: Authorise Kubectl with EKS
+        run: aws eks update-kubeconfig --name $CLUSTER_NAME
+      - name: Get namespaces list
+        id: get-namespaces
+        run: |
+          NAMESPACES=$(kubectl get ns -o json | jq -c ".items[] | .metadata.name" | jq -s .)
+          echo $NAMESPACES
+          echo ::set-output name=namespaces::${NAMESPACES}
+
+  trivy-namespace-scan:
+    name: Trivy Namespace Scan
+    runs-on: ubuntu-latest
+    needs: [ get-namespaces ]
+    strategy:
+      matrix:
+        namespaces: ${{ fromJson(needs.get-namespaces.outputs.namespaces) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Trivy
+        run: |
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.31.3/trivy_0.31.3_Linux-64bit.deb
+          sudo dpkg -i trivy_0.31.3_Linux-64bit.deb
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.BAHMNI_AWS_ID }}
+          aws-secret-access-key: ${{ secrets.BAHMNI_AWS_SECRET }}
+          aws-region: ${{ secrets.BAHMNI_AWS_REGION }}
+          role-to-assume: ${{ secrets.BAHMNI_INFRA_ADMIN_ROLE }}
+          role-duration-seconds: 900 # 15 mins
+          role-session-name: BahmniInfraAdminSession
+      - name: Authorise Kubectl with EKS
+        run: aws eks update-kubeconfig --name $CLUSTER_NAME
+
+      - name: Create reports directory
+        run: mkdir reports
+
+      - name: Run Trivy Detailed Scan for Critical Vulnerabilities
+        run: trivy k8s --no-progress --severity CRITICAL --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/critical-vulnerabilities.txt
+      - name: Run Trivy Detailed Scan for High Vulnerabilities
+        run: trivy k8s --no-progress --severity HIGH --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/high-vulnerabilities.txt
+      - name: Run Trivy Detailed Scan for Medium Vulnerabilities
+        run: trivy k8s --no-progress --severity MEDIUM --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/medium-vulnerabilities.txt
+      - name: Run Trivy Detailed Scan for Low Vulnerabilities
+        run: trivy k8s --no-progress --severity LOW --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/low-vulnerabilities.txt
+      - name: Run Trivy Detailed Scan for Unknown Vulnerabilities
+        run: trivy k8s --no-progress --severity UNKNOWN --report=all --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/unknown-vulnerabilities.txt
+      - name: Checking for Empty Vulnerability Reports
+        shell: bash
+        run: bash .github/check_empty_reports.sh
+      - name: Run Trivy Summary Scan
+        run: trivy k8s --no-progress --report=summary --namespace ${{ matrix.namespaces }} --timeout=1h all -o reports/trivy-summary.txt
+
+      - name: Upload Report Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.namespaces }}
+          path: reports/
+
+  upload-report:
+    runs-on: ubuntu-latest
+    name: Upload Report
+    needs: [ trivy-namespace-scan, trivy-cluster-summary-scan ]
+    steps:
+      - name: Checkout reports branch
+        uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+      - name: Download Reports
+        uses: actions/download-artifact@v3
+        with:
+          path: trivy-reports/
+      - name: Update report timestamp
+        run: |
+          sed -i.bak "s|Report Generated at:.*</p>|Report Generated at: $(TZ=Asia/Kolkata date) </p>|" trivy-reports/index.html && rm trivy-reports/index.html.bak
+      - name: Publish Report
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "Updating trivy-report"
+          git push
+  notification:
+    name: Slack notification
+    needs: [upload-report]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post message
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"🔎 Trivy Security Scan completed for ${{ env.CLUSTER_NAME }}. \n> <https://bahmniindiadistro.github.io/helm-umbrella-chart/trivy-reports/|View Report>"}' ${{ secrets.SLACK_WEBHOOK_URL }}
