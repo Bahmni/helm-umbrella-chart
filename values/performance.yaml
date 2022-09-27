@@ -127,6 +127,11 @@ patient-documents:
 appointments:
   enabled: true
 
+clinic-config:
+  metadata:
+    labels:
+      environment: performance
+
 ndhm-react:
   enabled: true
   metadata:
