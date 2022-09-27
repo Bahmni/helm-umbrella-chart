@@ -127,3 +127,6 @@ patient-documents:
 
 appointments:
   enabled: true
+
+implementer-interface:
+  enabled: true
