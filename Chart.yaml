@@ -12,7 +12,7 @@ dependencies:
 
   - repository: https://bahmni.github.io/helm-charts
     name: bahmni-web
-    version: 1.0.0-84
+    version: 1.0.0-89
     condition: bahmni-web.enabled
 
   - repository: https://bahmni.github.io/helm-charts
