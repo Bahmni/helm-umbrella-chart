@@ -94,5 +94,5 @@ patient-documents:
 appointments:
   enabled: true
 
-ndhm-react:
+abha-verification:
   enabled: false

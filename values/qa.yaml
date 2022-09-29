@@ -133,7 +133,7 @@ clinic-config:
     labels:
       environment: qa
 
-ndhm-react:
+abha-verification:
   enabled: true
   metadata:
     labels:

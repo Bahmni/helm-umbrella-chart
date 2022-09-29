@@ -85,6 +85,6 @@ dependencies:
     version: ~1.0.0-0
 
   - repository: https://bahmniindiadistro.github.io/helm-charts
-    name: ndhm-react
+    name: abha-verification
     version: ~1.0.0-0
-    condition: ndhm-react.enabled
+    condition: abha-verification.enabled
