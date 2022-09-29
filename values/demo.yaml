@@ -130,3 +130,6 @@ appointments:
 
 implementer-interface:
   enabled: true
+  metadata:
+    labels:
+      environment: demo
