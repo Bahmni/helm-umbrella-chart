@@ -7,12 +7,12 @@ version: 1.0.0
 dependencies:
   - repository: https://bahmni.github.io/helm-charts
     name: openmrs
-    version: 1.0.0-92
+    version: ~1.0.0-0
     condition: openmrs.enabled
 
   - repository: https://bahmni.github.io/helm-charts
     name: bahmni-web
-    version: 1.0.0-89
+    version: ~1.0.0-0
     condition: bahmni-web.enabled
 
   - repository: https://bahmni.github.io/helm-charts
@@ -27,7 +27,7 @@ dependencies:
 
   - repository: https://bahmni.github.io/helm-charts
     name: reports
-    version: 1.0.0-48
+    version: ~1.0.0-0
     condition: reports.enabled
 
   - repository: https://bahmniindiadistro.github.io/helm-charts
@@ -79,6 +79,11 @@ dependencies:
     name: appointments
     version: ~1.0.0-0
     condition: appointments.enabled
+
+  - repository: https://bahmni.github.io/helm-charts
+    name: implementer-interface
+    version: ~1.0.0-0
+    condition: implementer-interface.enabled
 
   - repository: https://bahmniindiadistro.github.io/helm-charts
     name: clinic-config

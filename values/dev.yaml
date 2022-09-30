@@ -89,5 +89,8 @@ patient-documents:
 appointments:
   enabled: true
 
+implementer-interface:
+  enabled: true
+
 abha-verification:
   enabled: true

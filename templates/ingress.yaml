@@ -82,6 +82,16 @@ spec:
                   number: 80
           {{- end }}
 
+          {{- if index .Values "implementer-interface" "enabled" }}
+          - path: /implementer-interface
+            pathType: Prefix
+            backend:
+              service:
+                name: implementer-interface
+                port:
+                  number: 80
+          {{- end }}
+
           {{- if index .Values "abha-verification" "enabled" }}
           - path: /abha-verification
             pathType: Prefix

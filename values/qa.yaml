@@ -128,6 +128,12 @@ patient-documents:
 appointments:
   enabled: true
 
+implementer-interface:
+  enabled: true
+  metadata:
+    labels:
+      environment: qa
+
 clinic-config:
   metadata:
     labels:
