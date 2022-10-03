@@ -86,7 +86,7 @@ patient-documents:
   config:
     OPENMRS_HOST: "openmrs"
 
-crater_atomfeed:
+crater-atomfeed:
   enabled: true
 appointments:
   enabled: true

@@ -136,7 +136,7 @@ jobs:
           --set rabbitmq.auth.password=$MQ_PASSWORD \
           --set ingress.host=${{env.ENVIRONMENT_DNS}} \
           --set efs.fileSystemId=${{env.EFS_FILESYSTEM_ID}} \
-          --set crater_atomfeed.config.CRATER_ATOMFEED_DB_HOST=$RDS_HOST \
+          --set crater-atomfeed.config.CRATER_ATOMFEED_DB_HOST=$RDS_HOST \
           --values=values/${{ env.ENVIRONMENT }}.yaml \
           --install \
           --namespace ${{ env.ENVIRONMENT }} --create-namespace
