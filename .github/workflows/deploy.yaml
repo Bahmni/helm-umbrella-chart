@@ -82,9 +82,9 @@ jobs:
           --set databases.crater.DB_NAME=crater_${{ env.ENVIRONMENT }} \
           --set databases.crater.USERNAME=$CRATER_DB_USERNAME \
           --set databases.crater.PASSWORD=$CRATER_DB_PASSWORD \
-          --set databases.crater_atomfeed.DB_NAME=crater_atomfeed \
-          --set databases.crater_atomfeed.USERNAME=beehyv \
-          --set databases.crater_atomfeed.PASSWORD=beehyv123 \
+          --set databases.crater_atomfeed.DB_NAME=crater_atomfeed_${{ env.ENVIRONMENT }} \
+          --set databases.crater_atomfeed.USERNAME=$CRATER_ATOMFEED_DB_USERNAME \
+          --set databases.crater_atomfeed.PASSWORD=$CRATER_ATOMFEED_DB_PASSWORD \
           --set databases.reports.DB_NAME=bahmni_reports_${{ env.ENVIRONMENT }} \
           --set databases.reports.USERNAME=$REPORTS_DB_USERNAME \
           --set databases.reports.PASSWORD=$REPORTS_DB_PASSWORD
@@ -137,6 +137,13 @@ jobs:
           --set ingress.host=${{env.ENVIRONMENT_DNS}} \
           --set efs.fileSystemId=${{env.EFS_FILESYSTEM_ID}} \
           --set crater-atomfeed.config.CRATER_ATOMFEED_DB_HOST=$RDS_HOST \
+          --set crater-atomfeed.config.CRATER_ATOMFEED_DB_NAME=crater_atomfeed_${{ env.ENVIRONMENT }} \
+          --set crater-atomfeed.secrets.OPENMRS_ATOMFEED_USER=superman \
+          --set crater-atomfeed.secrets.OPENMRS_ATOMFEED_PASSWORD=Admin123 \
+          --set crater-atomfeed.secrets.CRATER_USERNAME=superman@bahmni.org \
+          --set crater-atomfeed.secrets.CRATER_PASSWORD=$CRATER_ADMIN_PASSWORD \
+          --set crater-atomfeed.secrets.CRATER_ATOMFEED_DB_USERNAME=$CRATER_ATOMFEED_DB_USERNAME \
+          --set crater-atomfeed.secrets.CRATER_ATOMFEED_DB_PASSWORD=$CRATER_ATOMFEED_DB_PASSWORD \
           --values=values/${{ env.ENVIRONMENT }}.yaml \
           --install \
           --namespace ${{ env.ENVIRONMENT }} --create-namespace
