@@ -1,5 +1,9 @@
 loki:
   enabled: true
+  commonConfig:
+    replication_factor: 1
+  storage:
+    type: 'filesystem'
   persistence:
     enabled: true
     size: 10Gi
@@ -13,32 +17,39 @@ loki:
     chunk_retain_period: 1m
     lifecycler:
       ring:
-        kvstore:
-          store: inmemory
         replication_factor: 1
+    max_transfer_retries: 0
   limits_config:
     retention_period: 24h
+    reject_old_samples: true
+    reject_old_samples_max_age: 168h
+    max_entries_limit_per_query: 5000
+    enforce_metric_name: false
   compactor:
-    working_directory: /data/retention
-    shared_store: gcs
+    working_directory: /data/loki/boltdb-shipper-compactor
+    shared_store: filesystem
     compaction_interval: 10m
     retention_enabled: true
     retention_delete_delay: 2h
     retention_delete_worker_count: 150
   schema_config:
     configs:
-      -   from: "2022-09-09"
+      -   from: "2022-10-03"
           index:
             period: 24h
             prefix: loki_index_
           object_store: filesystem
-          schema: v11
-          store: boltdb
-  server:
+          schema: v12
+          store: boltdb-shipper
+    server:
     http_listen_port: 3100
+    grpc_listen_port: 9095
   storage_config:
-    boltdb:
-      directory: /data/loki/index
+    boltdb_shipper:
+      active_index_directory: /data/loki/boltdb-shipper-active
+      cache_location: /data/loki/boltdb-shipper-cache
+      cache_ttl: 24h
+      shared_store: filesystem
     filesystem:
       directory: /data/loki/chunks
   table_manager:
