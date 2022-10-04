@@ -90,3 +90,6 @@ crater-atomfeed:
   enabled: true
 appointments:
   enabled: true
+
+implementer-interface:
+  enabled: true

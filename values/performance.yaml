@@ -124,8 +124,16 @@ patient-documents:
       environment: performance
   config:
     OPENMRS_HOST: "openmrs"
+
 appointments:
   enabled: true
 
+
 crater-atomfeed:
   enabled: true
+
+implementer-interface:
+  enabled: true
+  metadata:
+    labels:
+      environment: performance
