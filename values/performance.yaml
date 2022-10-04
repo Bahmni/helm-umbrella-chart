@@ -126,3 +126,6 @@ patient-documents:
     OPENMRS_HOST: "openmrs"
 appointments:
   enabled: true
+
+crater-atomfeed:
+  enabled: true
