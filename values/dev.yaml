@@ -88,6 +88,9 @@ patient-documents:
 
 crater-atomfeed:
   enabled: true
+  metadata:
+    labels:
+      environment: dev
 appointments:
   enabled: true
 

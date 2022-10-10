@@ -131,6 +131,9 @@ appointments:
 
 crater-atomfeed:
   enabled: true
+  metadata:
+    labels:
+      environment: demo
 
 implementer-interface:
   enabled: true
