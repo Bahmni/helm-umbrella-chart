@@ -138,6 +138,7 @@ jobs:
           --set efs.fileSystemId=${{env.EFS_FILESYSTEM_ID}} \
           --set crater-atomfeed.config.CRATER_ATOMFEED_DB_HOST=$RDS_HOST \
           --set crater-atomfeed.config.CRATER_ATOMFEED_DB_NAME=crater_atomfeed_${{ env.ENVIRONMENT }} \
+          --set crater-atomfeed.config.CRATER_URL=https://payments-${{env.ENVIRONMENT_DNS}} \
           --set crater-atomfeed.secrets.OPENMRS_ATOMFEED_USER=superman \
           --set crater-atomfeed.secrets.OPENMRS_ATOMFEED_PASSWORD=Admin123 \
           --set crater-atomfeed.secrets.CRATER_USERNAME=superman@bahmni.org \
