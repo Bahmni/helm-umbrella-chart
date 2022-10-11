@@ -46,3 +46,8 @@ prometheus:
   prometheusSpec:
     nodeSelector:
       eks.amazonaws.com/nodegroup: nonprod
+    additionalScrapeConfigs:
+      - job_name: "java"
+        metrics_path: "/metrics"
+        static_configs:
+          - targets: ["openmrs.performance.svc.cluster.local:8280"]
