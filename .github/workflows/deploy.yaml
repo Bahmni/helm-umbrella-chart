@@ -148,8 +148,7 @@ jobs:
           --values=values/${{ env.ENVIRONMENT }}.yaml \
           --install \
           --namespace ${{ env.ENVIRONMENT }} --create-namespace
-      - name: Restart OpenMRS on Clinic Config Update
-        run: ./.github/restartOpenMRSOnConfigUpdate.sh ${{env.ENVIRONMENT}}
+
   notification:
     name: Slack notification
     needs:
