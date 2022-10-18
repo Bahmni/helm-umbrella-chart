@@ -86,6 +86,11 @@ patient-documents:
   config:
     OPENMRS_HOST: "openmrs"
 
+crater-atomfeed:
+  enabled: true
+  metadata:
+    labels:
+      environment: dev
 appointments:
   enabled: true
 

@@ -128,6 +128,13 @@ patient-documents:
 appointments:
   enabled: true
 
+
+crater-atomfeed:
+  enabled: true
+  metadata:
+    labels:
+      environment: qa
+
 implementer-interface:
   enabled: true
   metadata:

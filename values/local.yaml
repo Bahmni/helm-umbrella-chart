@@ -94,6 +94,10 @@ patient-documents:
 appointments:
   enabled: true
 
+
+crater-atomfeed:
+  enabled: true
+
 implementer-interface:
   enabled: true
 
