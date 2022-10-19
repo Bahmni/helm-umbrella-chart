@@ -5,7 +5,7 @@ type: application
 version: 1.0.0
 
 dependencies:
-  - repository: https://bahmni.github.io/helm-charts
+  - repository: https://bahmniindiadistro.github.io/helm-charts
     name: openmrs
     version: ~1.0.0-0
     condition: openmrs.enabled
@@ -69,7 +69,7 @@ dependencies:
     name: patient-documents
     version: ~1.0.0-0
     condition: patient-documents.enabled
-  
+
   - repository: https://bahmni.github.io/helm-charts
     name: crater-atomfeed
     version: ~1.0.0-0
