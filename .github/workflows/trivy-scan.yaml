@@ -47,35 +47,6 @@ jobs:
           name: cluster-summary
           path: reports/
   
-  save-scan-summary:
-    name: Save Scan Summary
-    needs: trivy-cluster-summary-scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout reports branch
-        uses: actions/checkout@v2
-        with:
-          ref: gh-pages
-      
-      - name: Create reports directory
-        run: mkdir -p scan-summary-history
-      
-      - name: Download Cluster Summary Report
-        uses: actions/download-artifact@v3
-        with:
-          name: scan-summary-history/cluster-summary.txt
-      
-      - name: Rename Scan Summary to with timestamp
-        run: mv scan-summary-history/cluster-summary.txt scan-summary-history/cluster-summary-"$(date +"%m-%d-%y")".txt
-      - name: Publish Report
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add .
-          git commit -m "Updating trivy-report"
-          git push
-       
-
   get-namespaces:
     name: Get Namespaces
     runs-on: ubuntu-latest
@@ -174,6 +145,33 @@ jobs:
           git add .
           git commit -m "Updating trivy-report"
           git push
+    
+  save-scan-summary:
+    name: Save Scan Summary
+    needs: upload-report
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout reports branch
+        uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+      
+      - name: Download Cluster Summary
+        uses: actions/download-artifact@v3
+        with:
+          name: cluster-summary
+      
+      - name: Rename Scan Summary with current date
+        run: mv cluster-summary.txt trivy-reports/scan-summary-history/cluster-summary-"$(date +"%m-%d-%y")".txt
+      
+      - name: Publish Report
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "Saving Cluster Scan Summary for "$(date +"%m-%d-%y")""
+          git push
+  
   notification:
     name: Slack notification
     needs: [upload-report]
