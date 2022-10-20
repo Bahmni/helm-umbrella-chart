@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - BAH-2481
     paths:
       - .github/workflows/trivy-scan.yaml
   schedule:
@@ -162,12 +161,6 @@ jobs:
         with:
           name: cluster-summary
       
-      - name: Create new folder for scan-summary-history
-        run: |
-          mkdir scan-summary-history
-          mv trivy-reports/scan-summary-history/cluster-summary-* scan-summary-history
-          rm -rf trivy-reports/scan-summary-history
-     
       - name: Rename Scan Summary with current date
         run: mv cluster-summary.txt scan-summary-history/cluster-summary-"$(date +"%m-%d-%y")".txt
       
