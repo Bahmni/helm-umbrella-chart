@@ -107,3 +107,12 @@ This is a one time setup. Configure your AWS CLI by following the steps
 e.g
 ./connectmysqlrds.sh dev openmrs
 ```
+
+## View JVM metrics in Grafana
+The JVM metrics for OpenMRS is fetched and displayed on route `/metrics` in port `8280`
+with the help of [jmx-exporter](https://github.com/prometheus/jmx_exporter). Information related to heap space, GC count CPU load are provided in this route, which is visualised in Grafana with the help of [JVM dashboard](https://grafana.com/grafana/dashboards/8563-jvm-dashboard/).
+- Sign in to monitoring environment
+- Open Dashboards &rarr; Import
+- Add the following ID (`8563`) to use JVM dashboard
+- Click `load` button
+- This would bring up the JVM dashboard containing visualised information of the JVM metrices.
