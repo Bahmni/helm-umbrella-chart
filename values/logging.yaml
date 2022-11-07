@@ -8,13 +8,9 @@ loki:
   config:
     auth_enabled: false
 
-    memberlist:
-      join_members:
-        - '{{ include "loki.fullname" . }}-memberlist'
-
     ingester:
       chunk_idle_period: 3m
-      chunk_block_size: 262144
+      chunk_block_size: 262144  
       chunk_retain_period: 1m
       max_transfer_retries: 0
       wal:
