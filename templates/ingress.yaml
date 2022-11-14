@@ -42,16 +42,6 @@ spec:
                   number: 8051
           {{- end }}
 
-          {{- if index .Values "otp-service" "enabled" }}
-          - path: /otp-service
-            pathType: Prefix
-            backend:
-              service:
-                name: otp-service
-                port:
-                  number: 80
-          {{- end }}
-
           {{- if index .Values "patient-documents" "enabled" }}
           - path: /document_images
             pathType: Prefix
@@ -193,5 +183,15 @@ spec:
                 name: hiu-ui
                 port:
                   number: 5000
+          {{- end }}
+
+          {{- if index .Values "otp-service" "enabled" }}
+          - path: /otp-service/(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: otp-service
+                port:
+                  number: 80
           {{- end }}
 
