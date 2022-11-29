@@ -15,11 +15,11 @@ ingress:
 openmrs:
   enabled: true
   secrets:
-    DB_USERNAME: openmrs-user
-    DB_PASSWORD: password
-    DB_HOST: mysql
+    OMRS_DB_USERNAME: openmrs-user
+    OMRS_DB_PASSWORD: password
+    OMRS_DB_HOSTNAME: mysql
   config:
-    DB_NAME: openmrs
+    OMRS_DB_NAME: openmrs
 bahmni-web:
   enabled: true
 bahmni-lab:
