@@ -45,6 +45,16 @@ prometheusOperator:
 prometheus:
   prometheusSpec:
     retention: 2d
+    retentionSize: 8GB
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: gp2
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
     nodeSelector:
       eks.amazonaws.com/nodegroup: nonprod
     additionalScrapeConfigs:
