@@ -66,3 +66,22 @@ crater-atomfeed:
 
 implementer-interface:
   enabled: true
+
+bahmni-metabase:
+  enabled: true
+  config:
+    MB_DB_TYPE: postgres
+    MB_DB_DBNAME: 'metabase'
+    MB_DB_PORT:  5432
+    OPENMRS_DB_NAME: 'openmrs'
+    OPENMRS_DB_TYPE: 'mysql'
+  secrets:
+    MB_ADMIN_EMAIL: 'admin@metabase.local'
+    MB_ADMIN_FIRST_NAME: 'Admin'
+    MB_ADMIN_PASSWORD: 'Admin@123'
+    MB_DB_USER: 'metabase-user'
+    MB_DB_PASS: 'password'
+    MB_DB_HOST: 'metabasedb'
+    OPENMRS_DB_HOST: 'openmrsdb'
+    OPENMRS_DB_USERNAME: 'openmrs-user'
+    OPENMRS_DB_PASSWORD: 'password'
