@@ -7,49 +7,49 @@ version: 1.0.0
 dependencies:
   - repository: https://bahmni.github.io/helm-charts
     name: openmrs
-    version: ~1.0.0-0
+    version: 1.0.0-205
     condition: openmrs.enabled
 
   - repository: https://bahmni.github.io/helm-charts
     name: bahmni-web
-    version: ~1.0.0-0
+    version: 1.0.0-167
     condition: bahmni-web.enabled
 
   - repository: https://bahmni.github.io/helm-charts
     name: bahmni-lab
-    version: ~1.0.0-0
+    version: 1.0.0-160
     condition: bahmni-lab.enabled
 
   - repository: https://bahmni.github.io/helm-charts
     name: crater
-    version: ~1.0.0-0
+    version: 1.0.0-37
     condition: crater.enabled
 
   - repository: https://bahmni.github.io/helm-charts
     name: reports
-    version: ~1.0.0-0
+    version: 1.0.0-54
     condition: reports.enabled
 
   - repository: https://bahmni.github.io/helm-charts
     name: patient-documents
-    version: ~1.0.0-0
+    version: 1.0.0-16
     condition: patient-documents.enabled
 
   - repository: https://bahmni.github.io/helm-charts
     name: crater-atomfeed
-    version: ~1.0.0-0
+    version: 1.0.0-108
     condition: crater-atomfeed.enabled
 
   - repository: https://bahmni.github.io/helm-charts
     name: appointments
-    version: ~1.0.0-0
+    version: 1.0.0-30
     condition: appointments.enabled
 
   - repository: https://bahmni.github.io/helm-charts
     name: implementer-interface
-    version: ~1.0.0-0
+    version: 1.0.0-28
     condition: implementer-interface.enabled
 
   - repository: https://bahmni.github.io/helm-charts
     name: clinic-config
-    version: ~1.0.0-0
+    version: 1.0.0-208
