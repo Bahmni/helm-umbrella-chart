@@ -2,7 +2,7 @@ apiVersion: v2
 name: bahmni
 description: Helm Umbrella chart for Bahmni
 type: application
-version: 1.0.0
+version: 1.0.0-beta
 
 dependencies:
   - repository: https://bahmni.github.io/helm-charts
