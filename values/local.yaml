@@ -39,7 +39,7 @@ crater:
     DB_USERNAME: 'crater-user'
     DB_PASSWORD: 'password'
     ADMIN_EMAIL: 'superman@bahmni.org'
-    ADMIN_PASSWORD: 'crater123'
+    ADMIN_PASSWORD: 'Crater123'
 reports:
   enabled: true
   config:
