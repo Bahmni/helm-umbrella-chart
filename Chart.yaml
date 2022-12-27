@@ -12,7 +12,7 @@ dependencies:
 
   - repository: https://bahmni.github.io/helm-charts
     name: bahmni-web
-    version: 1.0.0-167
+    version: 1.0.0-178
     condition: bahmni-web.enabled
 
   - repository: https://bahmni.github.io/helm-charts
@@ -22,7 +22,7 @@ dependencies:
 
   - repository: https://bahmni.github.io/helm-charts
     name: crater
-    version: 1.0.0-37
+    version: 1.0.0-41
     condition: crater.enabled
 
   - repository: https://bahmni.github.io/helm-charts
@@ -32,7 +32,7 @@ dependencies:
 
   - repository: https://bahmni.github.io/helm-charts
     name: patient-documents
-    version: 1.0.0-16
+    version: 1.0.0-17
     condition: patient-documents.enabled
 
   - repository: https://bahmni.github.io/helm-charts
@@ -52,4 +52,4 @@ dependencies:
 
   - repository: https://bahmni.github.io/helm-charts
     name: clinic-config
-    version: 1.0.0-208
+    version: 1.0.0-219
