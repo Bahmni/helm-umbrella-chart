@@ -74,14 +74,33 @@ bahmni-metabase:
     MB_DB_DBNAME: 'metabase'
     MB_DB_PORT:  5432
     OPENMRS_DB_NAME: 'openmrs'
-    OPENMRS_DB_TYPE: 'mysql'
+    MART_DB_NAME: martdb
   secrets:
-    MB_ADMIN_EMAIL: 'admin@metabase.local'
+    MB_ADMIN_EMAIL: 'admin@mybahmni.org'
     MB_ADMIN_FIRST_NAME: 'Admin'
     MB_ADMIN_PASSWORD: 'Admin@123'
     MB_DB_USER: 'metabase-user'
     MB_DB_PASS: 'password'
-    MB_DB_HOST: 'metabasedb'
+    MB_DB_HOST: 'bahmni-local-postgresql'
     OPENMRS_DB_HOST: 'openmrsdb'
     OPENMRS_DB_USERNAME: 'openmrs-user'
     OPENMRS_DB_PASSWORD: 'password'
+    MART_DB_HOST: 'bahmni-local-postgresql'
+    MART_DB_USERNAME: 'bahmni-mart'
+    MART_DB_PASSWORD: 'password'
+
+postgresql:
+  enabled: false
+
+bahmni-mart:
+  enabled: false
+  config:
+    MART_DB_NAME: martdb
+    OPENMRS_DB_NAME: openmrs
+  secrets:
+    MART_DB_HOST: "bahmni-local-postgresql"
+    MART_DB_USERNAME: "bahmni-mart"
+    MART_DB_PASSWORD: "password"
+    OPENMRS_DB_HOST: "openmrsdb"
+    OPENMRS_DB_USERNAME: "openmrs-user"
+    OPENMRS_DB_PASSWORD: "password"

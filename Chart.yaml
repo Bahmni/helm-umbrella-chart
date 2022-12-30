@@ -58,3 +58,13 @@ dependencies:
     name: bahmni-metabase
     version: ~1.0.0-0
     condition: bahmni-metabase.enabled
+    
+  - repository: https://charts.bitnami.com/bitnami
+    name: postgresql
+    version: 12.1.2
+    condition: postgresql.enabled
+
+  - repository: https://bahmni.github.io/helm-charts
+    name: bahmni-mart
+    version: ~1.0.0-0
+    condition: bahmni-mart.enabled
