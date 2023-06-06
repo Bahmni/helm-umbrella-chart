@@ -1,3 +1,6 @@
+global:
+  TZ: "UTC"
+
 metadata:
   labels:
     environment: local
