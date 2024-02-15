@@ -20,6 +20,7 @@ openmrs:
     OMRS_DB_NAME: openmrs
     DEBUG: true
     OMRS_CREATE_TABLES: true
+    OMRS_DB_EXTRA_ARGS: "&zeroDateTimeBehavior=convertToNull"
 bahmni-web:
   enabled: true
 bahmni-lab:
